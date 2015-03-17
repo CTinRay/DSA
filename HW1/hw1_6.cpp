@@ -61,7 +61,7 @@ Int GcdByBinary( Int a, Int b, Int&times ){
 		}
 		m = m - n;
 	}
-	return ans;
+	return n * ans;
 }
 
 Int GcdByEuclid( Int a, Int b, Int&times ){
@@ -85,9 +85,6 @@ void CallGcd( Int(*gcdFunc)(Int , Int, Int&), Int a, Int b, const char*funcName 
    
 int main(){
 	Int a, b;
-
-	Int times;
-	Int ans;
 	while( cin >> a && a != 0 ){
 		cin >> b;
 		
