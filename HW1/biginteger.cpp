@@ -83,7 +83,7 @@ int BigInteger::AbsCmp(const BigInteger&bigInt ){
 }
 	
 
-BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt2 ){
+BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt2 ) const{
 	BigInteger result;
 	
 	int nMaxSets = max( bigInt1.nSets , bigInt2.nSets );       
@@ -101,7 +101,7 @@ BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt
 	return result;
 }
 
-BigInteger BigInteger::AbsSub( const BigInteger&bigInt1, const BigInteger&bigInt2 ){
+BigInteger BigInteger::AbsSub( const BigInteger&bigInt1, const BigInteger&bigInt2 ) const{
 	BigInteger result;	
 	int nMaxSets = max( bigInt1.nSets , bigInt2.nSets );       
 	for( int i = 0 ; i < nMaxSets ; ++i ){
@@ -234,7 +234,7 @@ void BigInteger::shiftRight(const int n){
 const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	BigInteger divisor(bigInt);
 	BigInteger divided( (*this) );
-	bigInt.shiftLeft( nSets - bigInt.nSets );
+	divisor.shiftLeft( nSets - bigInt.nSets );
 	for( int i = 0 ; i < nSets - bigInt.nSets ; ++ i ){
 		if( bigInt < divided ){
 			divided = divided - divisor;
@@ -255,7 +255,7 @@ BigInteger& BigInteger::operator*=(int multiplier){
 	if( numberSets[ nSets ] > 0 ){
 		nSets = nSets + 1;
 	}
-	       
+	return (*this);
 }
 
 	

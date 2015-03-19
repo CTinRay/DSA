@@ -5,7 +5,8 @@
 typedef long long int Int;
 #define expo2 30 //= the number of bit a number set can keep.
 #define expo10 10
-#define set10Max 10000000000 
+#define set10Max 1000000000
+
 #define nDigits 256
 #define nSetsMax ( nDigits / expo10 + 1 )
 #define setMask ( (1ll << expo2) -1 )
@@ -39,8 +40,8 @@ public:
 
 private:
 	bool AbsCmp(const BigInteger&)const; //Compare regardless of sign
-	BigInteger AbsSub( const BigInteger&, const BigInteger& ); //Sub regardless of sign
-	BigInteger AbsAdd( const BigInteger&, const BigInteger& ) ; //Add regardless of sign
+	BigInteger AbsSub( const BigInteger&, const BigInteger& ) const; //Sub regardless of sign
+	BigInteger AbsAdd( const BigInteger&, const BigInteger& ) const ; //Add regardless of sign
 	int AbsCmp(const BigInteger& );
 	void AbsAdd(const Int bigInt);
 	void UpdateNSets();
@@ -48,7 +49,7 @@ private:
 	Int nSets;
 	Int sign;
 	void shiftLeft(const int n);
-	void shiftRight(const int n)
+	void shiftRight(const int n);
 };
 
 
