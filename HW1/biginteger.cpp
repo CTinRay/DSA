@@ -10,53 +10,55 @@ BigInteger::BigInteger(){
 
 BigInteger::BigInteger(int initial){
 	if( initial > 0 ){
-		sign = ZERO;
+		sign = POSITIVE ;
 	}else if( initial < 0 ){
 		sign = NEGATIVE;
 		initial = -initial;
 	}else{
 		sign = 0;
 	}
-	nSets = 2;
+	nSets = 1;
 	numberSets[ 1 ] = initial >> expo2;
 	numberSets[ 0 ] = initial & setMask;
-}
-
-void BigInteger::UpdateNSets(){
-	for( int i = nSetsMax - 1 ; i >= 0 ; --i ){
-		if( numberSets[ i ] > 0 ){
-			nSets = i + 1;
-			return;
-		}
-	}
 }
 
 BigInteger::BigInteger(const std::string&numStr){
 	int strLen = numStr.length();
 	int offset = strLen % expo10;
-	//	int n10Sets = strLen / expo10;
-	Int sets10[ nDigits / expo10 + 1 ];
-	string strChop = numStr.substr( 0 , offset );
-	Int numberChop = stoi( strChop , 0 , 10 );		
-	this -> AbsAdd( numberChop );
-	(*this) *= set10Max;
-	for( int i = 1 ; i < ( nDigits / expo10 + 1 ) ; ++i ){
-		strChop = numStr.substr( i * expo10 + offset , (i+1) * expo10 + offset );
-		numberChop = stoi( strChop , 0 , 10 );
+	//1234567890123456   strlen = 16, offset = 7 
+	//^.....^^.......^
+	//|  7  |    9   |
+	//0     6        15
+	//|head |        |
+	//|chop |  chop  |
+
+	sign = POSITIVE;
+	nSets = 0;
+
+
+	string strChop; // Store part of string
+	Int numberChop; // Store part of number ( converted form string )
+	
+
+	if( offset != 0 ){// Convert the part of the head.
+		strChop = numStr.substr( 0 , offset - 1 );
+		numberChop = stoi( strChop , 0 , 10 );		
 		this -> AbsAdd( numberChop );
-		(*this) *= set10Max;
-	}       
-}
-void BigInteger::AbsAdd(const Int bigInt){
-	for( int i = 0 ; i < nSets ; ++i ){
-		numberSets[ i ] += bigInt;
-		numberSets[ i + 1 ] += bigInt >> expo2;
-		numberSets[ i ] &= setMask;
 	}
-	if( numberSets[ nSets ] > 0 ){
-		nSets = nSets + 1;
+
+	for( int i = 0 ; i < ( strLen / expo10 ) ; ++i ){
+		(*this) *= set10Max; 
+		
+		strChop = numStr.substr( i * expo10 + offset , expo10 );
+
+		numberChop = stoi( strChop , 0 , 10 );
+		this->printSets();	
+		this -> AbsAdd( numberChop );
+		this->printSets();	
 	}
+	this->printSets();	
 }
+
 
 BigInteger::BigInteger(const BigInteger&initial){
 	nSets = initial.nSets;
@@ -65,10 +67,25 @@ BigInteger::BigInteger(const BigInteger&initial){
 	}
 }       
 
+
 BigInteger::~BigInteger(){
 }
 
-int BigInteger::AbsCmp(const BigInteger&bigInt ){
+
+void BigInteger::AbsAdd(const Int number){
+	numberSets[ 0 ] += number;
+	for( int i = 0 ; i <= nSets ; ++i ){
+		numberSets[ i + 1 ] += numberSets[ i ] >> expo2;
+		numberSets[ i ] &= setMask;
+	}
+	if( numberSets[ nSets ] > 0 ){
+		nSets = nSets + 1;
+	}
+}
+
+
+
+int BigInteger::AbsCmp(const BigInteger&bigInt ) const{
 	int greater = EQUAL;
 	int nMax = max( nSets, bigInt.nSets );
 	for( int i = nMax - 1 ; i >= 0 ; ++i ){
@@ -166,6 +183,7 @@ const BigInteger BigInteger::operator*(const BigInteger&bigInt) const{
 			result.nSets = nSets + bigInt.nSets - 1;
 		}
 	}
+	return result;
 }
 
 void BigInteger::shiftLeft(const int n){
@@ -247,11 +265,14 @@ const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	
 BigInteger& BigInteger::operator*=(int multiplier){
 	int carry = 0;
+
 	for( int i = 0 ; i < nSets ; ++i ){
+
 		numberSets[ i ] = numberSets[ i ] * multiplier + carry;
 		carry = numberSets[ i ] >> expo2;
 		numberSets[ i ] &= setMask;
 	}
+	numberSets[ nSets ] = carry;
 	if( numberSets[ nSets ] > 0 ){
 		nSets = nSets + 1;
 	}
@@ -264,9 +285,10 @@ BigInteger& BigInteger::operator/=(int divisor){
 		numberSets[ i - 1 ] += ( numberSets[ i ] % divisor ) << expo2;
 		numberSets[ i ] /= divisor;
 	}
-	if( numberSets[ nSets - 1  ] = 0 ){
+	if( numberSets[ nSets - 1  ] == 0 ){
 		nSets = nSets - 1;
-	}	
+	}
+	return *this;
 }
 
 BigInteger& BigInteger::operator=(const BigInteger&bigInt){
@@ -295,6 +317,7 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 		cout << modded.numberSets[ 0 ];
 		bigIntTmp /= set10Max;
 	}
+	return os;
 }
 		
 
@@ -322,5 +345,27 @@ bool BigInteger::operator<(const BigInteger&bigInt) const{
 		return true;
 	}else{
 		return false;
+	}
+}
+
+void BigInteger::printSets(){
+	cout << "Sign:"
+	     << sign <<endl
+	     << "Number of sets:" 
+	     << nSets <<endl;
+	cout << "Sets:" << endl;
+	for( int i = 0 ; i < nSets ; ++i ){
+		cout << "\t" << i << ":\t" << numberSets[ i ] << endl;
+	}
+	cout << "----------" << endl;
+}
+
+
+void BigInteger::UpdateNSets(){
+	for( int i = nSetsMax - 1 ; i >= 0 ; --i ){
+		if( numberSets[ i ] > 0 ){
+			nSets = i + 1;
+			return;
+		}
 	}
 }

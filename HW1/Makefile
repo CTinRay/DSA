@@ -27,3 +27,7 @@ run1_7_1:
 
 run1_7_2:
 	./gcd_by_euclid
+
+bigIntTest:biginteger.cpp biginteger.h bigIntTest.cpp
+	g++ $(CPPFLAGS) -g3 -c biginteger.cpp bigIntTest.cpp
+	g++ $(CPPFLAGS) -g3 -o bigIntTest biginteger.o bigIntTest.o 

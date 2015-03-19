@@ -4,7 +4,7 @@
 
 typedef long long int Int;
 #define expo2 30 //= the number of bit a number set can keep.
-#define expo10 10
+#define expo10 9
 #define set10Max 1000000000
 
 #define nDigits 256
@@ -27,9 +27,9 @@ public:
 	BigInteger& operator=(const BigInteger&);
 	bool iseven();
 	bool iszero();
-
+	void printSets()const;
 	friend std::ostream& operator<<(std::ostream&, const BigInteger&);
-
+	void printSets();
 
 	const int POSITIVE =1;
 	const int ZERO = 0;
@@ -39,15 +39,18 @@ public:
 	const int LESS = -1;
 
 private:
-	bool AbsCmp(const BigInteger&)const; //Compare regardless of sign
+
 	BigInteger AbsSub( const BigInteger&, const BigInteger& ) const; //Sub regardless of sign
 	BigInteger AbsAdd( const BigInteger&, const BigInteger& ) const ; //Add regardless of sign
-	int AbsCmp(const BigInteger& );
+	int AbsCmp(const BigInteger& ) const;
+
 	void AbsAdd(const Int bigInt);
 	void UpdateNSets();
 	Int numberSets[ nSetsMax ] = {0};
+
 	Int nSets;
 	Int sign;
+
 	void shiftLeft(const int n);
 	void shiftRight(const int n);
 };
