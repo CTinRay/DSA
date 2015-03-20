@@ -1,6 +1,7 @@
 #include "biginteger.h"
 #include <algorithm>
 #include <iostream>
+#include <stack>
 using namespace std;
 
 BigInteger::BigInteger(){
@@ -195,20 +196,19 @@ void BigInteger::shiftLeft(const int n){
 	//       =|00000010|11110110|00111110|00110000|00000000|
 	//               ^^carryout=2  ^....^remain=6
 	// offset = 10 / 8 = 1
-	int carryout = n % expo2; 
-	
-	//	int mask = ( 1 << carryout ) - 1;
+	int carryout = n % expo2; 	
+	int mask = ( 1 << carryout ) - 1;
 	//mask = ( 1 << 2 ) -1 = |00000011|
 	int remain = expo2 - carryout;
-	//	mask = mask << remain;
+	mask = mask << remain;
 	//mask << remain = |11000000|
 	int offset = n / expo2;
-	for( int i = nSets + offset - 1  ; i >= offset ; --i ){
-		numberSets[ i +  1 ] += ( numberSets[ i - offset ] ) >> remain ;
-		numberSets[ i ] = numberSets[ i - offset ] << carryout;
+	for( int i = nSets - 1 ; i >= 0 ; --i ){
+		numberSets[ i + offset + 1 ] += ( numberSets[ i ] & mask ) >> remain ;
+		numberSets[ i + offset ] = ( numberSets[ i ] << carryout ) & setMask;
 		//|10111101| << carryout = |11110100|
 		if( offset > 0 ){
-			numberSets[ i - offset ] = 0;
+			numberSets[ i ] = 0;
 		}
 	}
 	if( numberSets[ nSets + offset ] > 0 ){
@@ -242,7 +242,7 @@ void BigInteger::shiftRight(const int n){
 		}*/
 
 	for( int i = 0 ; i < nSets ; ++i ){
-		numberSets[ i ] = numberSets[ i + offset ] >> head ;
+		numberSets[ i ] = ( numberSets[ i + offset ] >> head ) & setMask ;
 		numberSets[ i ] += ( numberSets[ i + offset + 1 ] & mask ) << tail;
 		if( offset > 0 ){
 			numberSets[ i + offset ] = 0;
@@ -290,7 +290,7 @@ BigInteger& BigInteger::operator*=(int multiplier){
 
 	
 BigInteger& BigInteger::operator/=(int divisor){
-	for( int i = nSets - 1 ; i > 0 ; --i ){
+	for( int i = nSets - 1 ; i >= 0 ; --i ){
 		numberSets[ i - 1 ] += ( numberSets[ i ] % divisor ) << expo2;
 		numberSets[ i ] /= divisor;
 	}
@@ -322,10 +322,16 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 	BigInteger bigIntTmp( bigInt );
 	BigInteger divisor( set10Max );
 	BigInteger modded;
-	for( int i = 0 ; i < (nDigits / expo10) + 1 ; ++i ){
+	stack<string>strs;
+	while( bigIntTmp.nSets != 0 ){
 		modded = bigIntTmp % divisor;
-		cout << modded.numberSets[ 0 ];
-		bigIntTmp /= set10Max;
+		string strNumPart = to_string( modded.numberSets[ 0 ] );
+		strs.push( strNumPart );
+		bigIntTmp /= set10Max ;
+	}
+	while( ! strs.empty() ){
+		cout << strs.top();
+		strs.pop();
 	}
 	return os;
 }
