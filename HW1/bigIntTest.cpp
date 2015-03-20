@@ -30,11 +30,16 @@ void shiftTest( int way , BigInteger&bigInt , int times = expo2 ){
 	cout << "##### Shift Test End #####" << endl;
 }
 
-BigInteger modTest( BigInteger &a, BigInteger &b, string nameA = "A" , string nameB = "B" ){
+BigInteger modTest(){
+	string strA = "2147483648";
+	string strB = "10";
+	BigInteger a(strA);
+	BigInteger b(strB);
+		
 	cout << "##### Mod Test Start #####" << endl;
 	BigInteger result;
 	result = a % b;
-	cout << nameA << " % " << nameB << ":" << endl;
+	cout << strA << " % " << strB << ":" << endl;
 	result.printSets();
 	cout << "##### Mod Test End #####" << endl;
 	return result;
@@ -104,20 +109,36 @@ void mulAndPrintTest(){
 	bigInt.printSets();
 }
 
-/*
+string primeTable =
+	{"22801761907",
+	 "22801762441"
+	};
+
 void GcdByEuclid(){
-	
+	BigInteger a("22801761907");
+	BigInteger b("22801762441");
 	BigInteger m = a > b ? a : b;
 	BigInteger n = a < b ? a : b;
-	while( m % n != 0 ){
-		times += 1;
-		Int tmp = n;
+	cout << "m:" << endl;
+	m.printSets();
+	cout << "n:" << endl;
+	n.printSets();
+	BigInteger zero( 0 );
+	BigInteger tmp ;
+	while( ( m % n ) > zero ){	
+		cout << tmp << endl;
+		tmp = n;
 		n = m % n;
 		m = tmp;
 	}
-	return n;
+
+	cout << "Ans:" << endl;
+	cout << n << endl;
+	n.printSets();
+
+
 }
-*/
+
 
 void fibonacci(){
 	string strA = "222232244629420445529739893461909967206666939096499764990979600";
@@ -126,7 +147,7 @@ void fibonacci(){
 	BigInteger b(fib1199);
 	BigInteger tmp;
 	for( int i = 1198 ; i >= 1 ; --i ){
-		tmp = a.AbsSub(a, b);
+		tmp = a % b;
 		cout << "Fibo " << i << ":" << tmp << endl;
 		a = b;
 		b = tmp;
@@ -153,33 +174,14 @@ void subTest(){
 }
 	
 int main(){
-
-	/*	BigInteger bigInt1;
-	cout << "bigInt1:" << endl;
-	bigInt1.printSets();
-	*/		
-	//constructAndPrintTest();
-	/*
-	BigInteger bigInt2(test2);
-	cout << "bigInt2( " << test2 << " ):" << endl;
-	bigInt2.printSets();	
-       
-	BigInteger bigInt3(test3);
-	cout << "bigInt3(\" " << test3 << " \")" << endl;
-	bigInt3.printSets();	        	
-	
-	divideTest( bigInt3 , 1000000000 , 3 , "bigInt3" );
-	modTest( bigInt3 , bigInt2 );
-
-	cout << "cout << bigInt3:" << endl;
-	cout << bigInt3;
-	*/
 	//shiftAndPrintTest();
 	//addAndPrintTest();
 	//mulAndPrintTest();
 	fibonacci();
 	//divideTest();
 	//subTest();
+	//GcdByEuclid();
+	//modTest();
 	cout << endl 
 
 	     << "-----End of Test-----" << endl;

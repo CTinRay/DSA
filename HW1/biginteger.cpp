@@ -258,13 +258,13 @@ const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	}
 	BigInteger divisor(bigInt);
 	BigInteger divided( (*this) );       
-	divisor.shiftLeft( (nSets - bigInt.nSets) * expo2  );
+	divisor.shiftLeft( (nSets - bigInt.nSets + 1) * expo2  );
 	int cmp = divisor.AbsCmp( bigInt );
-	for( int i = 0 ; cmp == EQUAL || cmp == GREATER ; ++ i ){
-		divisor.shiftRight(1);
+	while( cmp == EQUAL || cmp == GREATER ){
 		if( divisor < divided ){
 			divided = AbsSub( divided, divisor );
 		}
+		divisor.shiftRight(1);
 		cmp = divisor.AbsCmp( bigInt );
 	}
 	divided.UpdateNSets();
@@ -300,7 +300,7 @@ BigInteger& BigInteger::operator/=(int divisor){
 }
 
 BigInteger& BigInteger::operator=(const BigInteger&bigInt){
-	for( int i = 0; i < bigInt.nSets ; ++i ){
+	for( int i = 0; i < nSetsMax ; ++i ){
 		numberSets[ i ] = bigInt.numberSets[ i ];
 	}
 	sign = bigInt.sign;
