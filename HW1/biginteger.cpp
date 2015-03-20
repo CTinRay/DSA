@@ -7,8 +7,8 @@
 using namespace std;
 
 BigInteger::BigInteger(){
-	nSets = 0;
-	sign = ZERO;
+nSets = 0;
+sign = POSITIVE; //To Be Modified
 }
 
 BigInteger::BigInteger(int initial){
@@ -82,7 +82,7 @@ void BigInteger::AbsAdd(const Int number){
 	}
 	if( numberSets[ nSets ] > 0 ){
 		nSets = nSets + 1;
-	}
+	}	
 }
 
 
@@ -109,7 +109,7 @@ BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt
 	for( int i = 0 ; i < nMaxSets ; ++i ){
 		result.numberSets[i] = result.numberSets[i] + bigInt1.numberSets[i] + bigInt2.numberSets[i];
 		result.numberSets[i+1] = result.numberSets[i] >> expo2;
-		result.numberSets[i] = result.numberSets[i] && setMask ;
+		result.numberSets[i] = result.numberSets[i] & setMask ;
 	}
 	if( result.numberSets[ nMaxSets ] != 0 ){
 		result.nSets = nMaxSets + 1;
@@ -122,21 +122,14 @@ BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt
 
 BigInteger BigInteger::AbsSub( const BigInteger&bigInt1, const BigInteger&bigInt2 ) const{
 	BigInteger result;	
-	int nMaxSets = max( bigInt1.nSets , bigInt2.nSets );       
+	int nMaxSets = bigInt1.nSets;       
 	int carry = 0;
 	for( int i = 0 ; i < nMaxSets ; ++i ){
 		result.numberSets[i] = (1 << expo2 ) + bigInt1.numberSets[i] - bigInt2.numberSets[i] + carry;
 		carry = ( result.numberSets[i] >> expo2 ) - 1  ;
 		result.numberSets[i] = result.numberSets[i] & setMask ;
-	}
-
-	result.numberSets[ nSets ] = carry;
-	if( result.numberSets[ nMaxSets ] != 0 ){
-		result.nSets = nMaxSets + 1;
-	}else{
-		result.nSets = nMaxSets;
-	}
-
+	}	
+	result.UpdateNSets();
 	return result;	
 }
 const BigInteger BigInteger::operator-(const BigInteger&bigInt) const{
@@ -217,7 +210,7 @@ void BigInteger::shiftLeft(const int n){
 	if( numberSets[ nSets + offset ] > 0 ){
 		nSets = nSets + offset + 1;
 	}else{
-		nSets = nSets + offset;
+		nSets = nSets + offset ;
 	}	
 }
 
@@ -253,7 +246,7 @@ void BigInteger::shiftRight(const int n){
 	}
 
 	if( numberSets[ nSets - offset - 1] != 0 ){
-		nSets = nSets - offset ;
+		nSets = nSets - offset  ;
 	}else{
 		nSets = nSets - offset - 1;
 	}
@@ -270,7 +263,7 @@ const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	for( int i = 0 ; cmp == EQUAL || cmp == GREATER ; ++ i ){
 		divisor.shiftRight(1);
 		if( divisor < divided ){
-			divided = divided - divisor;
+			divided = AbsSub( divided, divisor );
 		}
 		cmp = divisor.AbsCmp( bigInt );
 	}
@@ -344,8 +337,8 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 	cout << numTop;
 	while( ! numStack.empty() ){
 		numTop = numStack.top();
-		numStack.pop();
-		cout << setw(expo10) << numTop;
+		numStack.pop();		
+		cout << setw(expo10)  << numTop;
 	}
 
 	return os;

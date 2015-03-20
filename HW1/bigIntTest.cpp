@@ -3,9 +3,11 @@
 #include <string>
 using namespace std;
 #define test2  1000000000
-#define test3 "1073741824"
+#define test3 "43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875"
 #define RIGHT 1
 #define LEFT -1
+#define fib1200 "27269884455406270157991615313642198705000779992917725821180502894974726476373026809482509284562310031170172380127627214493597616743856443016039972205847405917634660750474914561879656763268658528092195715626073248224067794253809132219056382939163918400"
+#define fib1199 "16853715462723491170192455155474509439735508098002844482595024267242834241944568802972062546036647271061368074350126366761024314387612704997681075881249068173708819887547926782036364656854243643357321405009295781778073579513653790357382166526579640801"
 
 void shiftTest( int way , BigInteger&bigInt , int times = expo2 ){
 	cout << "#####Shift Test Start#####" << endl;
@@ -49,12 +51,115 @@ void divideTest( BigInteger& bigInt , int divisor , int times = 3 , string name 
 	cout << "##### Divide /= Test End" << endl;
 }
 
+void divideTest(){
+	cout << "##### Divide /= Test Start" << endl;
+	BigInteger bigInt("2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376");
+	cout << "2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376 : " << endl;
+	bigInt.printSets();
+	for( int i = 300 ; i >= 1 ; --i ){
+		cout << "2^" << i << ":\t" << bigInt << endl;
+		bigInt /= 2;
+	}
+	bigInt.printSets();
+}
+	
+
+void constructAndPrintTest(){
+	string tmp;
+	cin >> tmp;
+	while( tmp != "exit" ){
+		BigInteger bigInt( tmp );
+		cout << bigInt << endl;
+		cin >> tmp;
+	}
+}
+
+void shiftAndPrintTest(){
+	BigInteger bigInt(1);
+	for( int i = 0 ; i < 300 ; ++i ){
+		cout << "2^" << i << ":\t" << bigInt << endl;
+		bigInt.shiftLeft(1);
+	}
+	bigInt.printSets();
+}
+
+void addAndPrintTest(){
+
+
+	BigInteger bigInt(1);
+	for( int i = 0 ; i < 300 ; ++i ){
+		cout << "sign: " << bigInt.sign << " 2^" << i << ":\t" << bigInt << endl;
+		bigInt = bigInt.AbsAdd( bigInt , bigInt );
+	}
+	bigInt.printSets();
+}
+
+void mulAndPrintTest(){
+
+	BigInteger bigInt(1);
+	for( int i = 0 ; i < 30 ; ++i ){
+		cout << " 2^" << i << ":\t" << bigInt << endl;
+		bigInt = bigInt *= 2;
+	}
+	bigInt.printSets();
+}
+
+/*
+void GcdByEuclid(){
+	
+	BigInteger m = a > b ? a : b;
+	BigInteger n = a < b ? a : b;
+	while( m % n != 0 ){
+		times += 1;
+		Int tmp = n;
+		n = m % n;
+		m = tmp;
+	}
+	return n;
+}
+*/
+
+void fibonacci(){
+	string strA = "222232244629420445529739893461909967206666939096499764990979600";
+	string strB = "137347080577163115432025771710279131845700275212767467264610201";
+	BigInteger a(fib1200);
+	BigInteger b(fib1199);
+	BigInteger tmp;
+	for( int i = 1198 ; i >= 1 ; --i ){
+		tmp = a.AbsSub(a, b);
+		cout << "Fibo " << i << ":" << tmp << endl;
+		a = b;
+		b = tmp;
+	}
+	tmp.printSets();
+
+}
+
+void subTest(){
+	string strA = "222232244629420445529739893461909967206666939096499764990979600";
+	string strB = "137347080577163115432025771710279131845700275212767467264610201";
+	BigInteger a(strA);
+	cout << "a:" << strA << endl;
+	a.printSets();
+	BigInteger b(strB);
+	cout << "b:" << strB << endl;
+	b.printSets();
+	
+	BigInteger c =  a - b;
+	cout << "c:" << endl;
+	c.printSets();
+	cout << c << endl;
+
+}
+	
 int main(){
 
 	/*	BigInteger bigInt1;
 	cout << "bigInt1:" << endl;
 	bigInt1.printSets();
 	*/		
+	//constructAndPrintTest();
+	/*
 	BigInteger bigInt2(test2);
 	cout << "bigInt2( " << test2 << " ):" << endl;
 	bigInt2.printSets();	
@@ -63,14 +168,20 @@ int main(){
 	cout << "bigInt3(\" " << test3 << " \")" << endl;
 	bigInt3.printSets();	        	
 	
-	//divideTest( bigInt3 , 1000000000 , 3 , "bigInt3" );
+	divideTest( bigInt3 , 1000000000 , 3 , "bigInt3" );
 	modTest( bigInt3 , bigInt2 );
 
 	cout << "cout << bigInt3:" << endl;
 	cout << bigInt3;
-	
-
+	*/
+	//shiftAndPrintTest();
+	//addAndPrintTest();
+	//mulAndPrintTest();
+	fibonacci();
+	//divideTest();
+	//subTest();
 	cout << endl 
+
 	     << "-----End of Test-----" << endl;
 }
 
