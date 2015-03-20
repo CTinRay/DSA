@@ -41,7 +41,7 @@ BigInteger::BigInteger(const std::string&numStr){
 	
 
 	if( offset != 0 ){// Convert the part of the head.
-		strChop = numStr.substr( 0 , offset - 1 );
+		strChop = numStr.substr( 0 , offset  );
 		numberChop = stoi( strChop , 0 , 10 );		
 		this -> AbsAdd( numberChop );
 	}
@@ -52,15 +52,13 @@ BigInteger::BigInteger(const std::string&numStr){
 		strChop = numStr.substr( i * expo10 + offset , expo10 );
 
 		numberChop = stoi( strChop , 0 , 10 );
-		this->printSets();	
 		this -> AbsAdd( numberChop );
-		this->printSets();	
 	}
-	this->printSets();	
 }
 
 
 BigInteger::BigInteger(const BigInteger&initial){
+	sign = initial.sign;
 	nSets = initial.nSets;
 	for( int i = 0 ; i < nSets ; ++i ){
 		numberSets[ i ] = initial.numberSets[ i ];
@@ -86,17 +84,17 @@ void BigInteger::AbsAdd(const Int number){
 
 
 int BigInteger::AbsCmp(const BigInteger&bigInt ) const{
-	int greater = EQUAL;
+
 	int nMax = max( nSets, bigInt.nSets );
 	for( int i = nMax - 1 ; i >= 0 ; ++i ){
 		if( numberSets[ i ] < bigInt.numberSets[ i ] ){
 			return LESS;
 		}
-		if( numberSets[ i ] < bigInt.numberSets[ i ] ){
-			greater = GREATER;
+		if( numberSets[ i ] > bigInt.numberSets[ i ] ){
+			return GREATER;
 		}
 	}	
-	return greater;
+	return EQUAL;
 }
 	
 
@@ -121,11 +119,14 @@ BigInteger BigInteger::AbsAdd( const BigInteger&bigInt1, const BigInteger&bigInt
 BigInteger BigInteger::AbsSub( const BigInteger&bigInt1, const BigInteger&bigInt2 ) const{
 	BigInteger result;	
 	int nMaxSets = max( bigInt1.nSets , bigInt2.nSets );       
+	int carry = 0;
 	for( int i = 0 ; i < nMaxSets ; ++i ){
-		result.numberSets[i] = result.numberSets[i] + (1 << expo2 ) + bigInt1.numberSets[i] - bigInt2.numberSets[i];
-		result.numberSets[i+1] = ( result.numberSets[i] >> expo2 ) - 1 ;
-		result.numberSets[i] = result.numberSets[i] && setMask ;
+		result.numberSets[i] = (1 << expo2 ) + bigInt1.numberSets[i] - bigInt2.numberSets[i] + carry;
+		carry = ( result.numberSets[i] >> expo2 ) - 1  ;
+		result.numberSets[i] = result.numberSets[i] & setMask ;
 	}
+
+	result.numberSets[ nSets ] = carry;
 	if( result.numberSets[ nMaxSets ] != 0 ){
 		result.nSets = nMaxSets + 1;
 	}else{
@@ -195,19 +196,22 @@ void BigInteger::shiftLeft(const int n){
 	//               ^^carryout=2  ^....^remain=6
 	// offset = 10 / 8 = 1
 	int carryout = n % expo2; 
-	int mask = ( 1 << carryout ) - 1;
+	
+	//	int mask = ( 1 << carryout ) - 1;
 	//mask = ( 1 << 2 ) -1 = |00000011|
 	int remain = expo2 - carryout;
-	mask = mask << remain;
+	//	mask = mask << remain;
 	//mask << remain = |11000000|
 	int offset = n / expo2;
-	for( int i = nSets - 1 + offset ; i >= offset ; ++i ){
-		numberSets[ i + offset + 1 ] += ( numberSets[ i ] & mask ) >> remain ;
-		numberSets[ i + offset ] = numberSets[ i ] << carryout;
+	for( int i = nSets + offset - 1  ; i >= offset ; --i ){
+		numberSets[ i +  1 ] += ( numberSets[ i - offset ] ) >> remain ;
+		numberSets[ i ] = numberSets[ i - offset ] << carryout;
 		//|10111101| << carryout = |11110100|
-		numberSets[ i ] = numberSets[ i ] << n;
+		if( offset > 0 ){
+			numberSets[ i - offset ] = 0;
+		}
 	}
-	if( numberSets[ nSets + offset ] != 0 ){
+	if( numberSets[ nSets + offset ] > 0 ){
 		nSets = nSets + offset + 1;
 	}else{
 		nSets = nSets + offset;
@@ -218,7 +222,8 @@ void BigInteger::shiftLeft(const int n){
 void BigInteger::shiftRight(const int n){
 	//As the number being shifted, the bits would not always fit in a number set.
 	//So some of the bits have to be carried in.
-	//Example:(expo2 = n( bit in a set ) = 8               
+	//Example:(expo2 = n( bit in a set ) = 8
+	//                                 ..head          
 	//        |00000010|11110110|00111110|00110000|00000000| >> 10
 	//       =|00000000|00000000|10111101|10001111|10001100| 
 	//                             ^....^tail=6    ^^head=2        
@@ -231,33 +236,37 @@ void BigInteger::shiftRight(const int n){
 	//mask << remain = |11000000|
 	int offset = n / expo2;
 
-	numberSets[ 0 ] = numberSets[ offset ] >> head ;
-	if( offset > 0 ){
-		numberSets[ offset -1 ] = (numberSets[ offset ] & mask) << tail;
+	//	numberSets[ 0 ] = numberSets[ offset ] >> head ;
+	/*if( offset > 0 ){
+		numberSets[ 0 ] = numberSets[ offset ] >> tail;
+		}*/
+
+	for( int i = 0 ; i < nSets ; ++i ){
+		numberSets[ i ] = numberSets[ i + offset ] >> head ;
+		numberSets[ i ] += ( numberSets[ i + offset + 1 ] & mask ) << tail;
+		if( offset > 0 ){
+			numberSets[ i + offset ] = 0;
+		}
 	}
 
-	for( int i = offset + 1 ; i < nSets ; ++i ){
-		numberSets[ i - offset ] = numberSets[ i ] >> head ;
-		numberSets[ i - offset -1 ] = (numberSets[ i ] & mask) << tail;
-		numberSets[ i ] = ((unsigned Int ) numberSets[ i ]) >> n;
-	}
-
-	if( numberSets[ nSets - offset ] != 0 ){
-		nSets = nSets - offset + 1;
+	if( numberSets[ nSets - offset - 1] != 0 ){
+		nSets = nSets - offset ;
 	}else{
-		nSets = nSets - offset;
+		nSets = nSets - offset - 1;
 	}
 }
 
 const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	BigInteger divisor(bigInt);
 	BigInteger divided( (*this) );
-	divisor.shiftLeft( nSets - bigInt.nSets );
-	for( int i = 0 ; i < nSets - bigInt.nSets ; ++ i ){
-		if( bigInt < divided ){
+	divisor.shiftLeft( (nSets - bigInt.nSets) * expo2  );
+	int cmp = divisor.AbsCmp( bigInt );
+	for( int i = 0 ; cmp == EQUAL || cmp == GREATER ; ++ i ){
+		divisor.shiftRight(1);
+		if( divisor < divided ){
 			divided = divided - divisor;
 		}
-		divisor.shiftRight(1);
+		cmp = divisor.AbsCmp( bigInt );
 	}
 	divided.UpdateNSets();
 	return divided;
@@ -292,12 +301,13 @@ BigInteger& BigInteger::operator/=(int divisor){
 }
 
 BigInteger& BigInteger::operator=(const BigInteger&bigInt){
-	for( int i = 0; i < nSets ; ++i ){
+	for( int i = 0; i < bigInt.nSets ; ++i ){
 		numberSets[ i ] = bigInt.numberSets[ i ];
 	}
 	sign = bigInt.sign;
 	nSets = bigInt.nSets;
 	return (*this);
+	
 }
 
 
@@ -339,9 +349,13 @@ bool BigInteger::operator<(const BigInteger&bigInt) const{
 	if( sign < bigInt.sign ){
 		return true;
 	}
+	if( sign > bigInt.sign ){
+		return false;
+	}
+
 	int cmp = this->AbsCmp( bigInt );
-	if( (cmp = LESS && sign == POSITIVE) ||
-	    (cmp = GREATER && sign == NEGATIVE) ){
+	if( (cmp == LESS && sign == POSITIVE) ||
+	    (cmp == GREATER && sign == NEGATIVE) ){
 		return true;
 	}else{
 		return false;

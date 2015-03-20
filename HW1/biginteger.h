@@ -2,7 +2,7 @@
 #include <string>
 
 
-typedef long long int Int;
+typedef unsigned long long int Int;
 #define expo2 30 //= the number of bit a number set can keep.
 #define expo10 9
 #define set10Max 1000000000
@@ -38,7 +38,7 @@ public:
 	const int EQUAL = 0;
 	const int LESS = -1;
 
-private:
+	//private:
 
 	BigInteger AbsSub( const BigInteger&, const BigInteger& ) const; //Sub regardless of sign
 	BigInteger AbsAdd( const BigInteger&, const BigInteger& ) const ; //Add regardless of sign
@@ -48,8 +48,8 @@ private:
 	void UpdateNSets();
 	Int numberSets[ nSetsMax ] = {0};
 
-	Int nSets;
-	Int sign;
+	int nSets;
+	int sign;
 
 	void shiftLeft(const int n);
 	void shiftRight(const int n);
