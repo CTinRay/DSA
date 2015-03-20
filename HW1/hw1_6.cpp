@@ -79,7 +79,7 @@ Int GcdByEuclid( Int a, Int b, Int&times ){
 void CallGcd( Int(*gcdFunc)(Int , Int, Int&), Int a, Int b, const char*funcName ){
 	Int times = 0;
 	Int ans = (*gcdFunc)( a, b, times);
-	cout << "Case (" << a << "," << b << "): " << funcName << " = "
+	cout << "Case (" << a << ", " << b << "): " << funcName << " = "
 		     << ans << ", taking "<< times <<" iterations" << endl;
 }
    

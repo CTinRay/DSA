@@ -1,6 +1,8 @@
+
 #include "biginteger.h"
 #include <algorithm>
 #include <iostream>
+#include <iomanip>
 #include <stack>
 using namespace std;
 
@@ -68,6 +70,7 @@ BigInteger::BigInteger(const BigInteger&initial){
 
 
 BigInteger::~BigInteger(){
+	
 }
 
 
@@ -87,7 +90,7 @@ void BigInteger::AbsAdd(const Int number){
 int BigInteger::AbsCmp(const BigInteger&bigInt ) const{
 
 	int nMax = max( nSets, bigInt.nSets );
-	for( int i = nMax - 1 ; i >= 0 ; ++i ){
+	for( int i = nMax - 1 ; i >= 0 ; --i ){
 		if( numberSets[ i ] < bigInt.numberSets[ i ] ){
 			return LESS;
 		}
@@ -257,8 +260,11 @@ void BigInteger::shiftRight(const int n){
 }
 
 const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
+	if( nSets < bigInt.nSets ){
+		return (*this);
+	}
 	BigInteger divisor(bigInt);
-	BigInteger divided( (*this) );
+	BigInteger divided( (*this) );       
 	divisor.shiftLeft( (nSets - bigInt.nSets) * expo2  );
 	int cmp = divisor.AbsCmp( bigInt );
 	for( int i = 0 ; cmp == EQUAL || cmp == GREATER ; ++ i ){
@@ -322,17 +328,26 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 	BigInteger bigIntTmp( bigInt );
 	BigInteger divisor( set10Max );
 	BigInteger modded;
-	stack<string>strs;
+	stack<Int>numStack;
+
 	while( bigIntTmp.nSets != 0 ){
 		modded = bigIntTmp % divisor;
-		string strNumPart = to_string( modded.numberSets[ 0 ] );
-		strs.push( strNumPart );
+		Int numPart = modded.numberSets[ 0 ];
+		numStack.push( numPart );
 		bigIntTmp /= set10Max ;
 	}
-	while( ! strs.empty() ){
-		cout << strs.top();
-		strs.pop();
+	Int numTop;
+
+	cout << setfill('0');
+	numTop = numStack.top();
+	numStack.pop();	
+	cout << numTop;
+	while( ! numStack.empty() ){
+		numTop = numStack.top();
+		numStack.pop();
+		cout << setw(expo10) << numTop;
 	}
+
 	return os;
 }
 		
