@@ -8,7 +8,7 @@ typedef unsigned long long int Int;
 #define set10Max 1000000000
 
 #define nDigits 256
-#define nSetsMax 800
+#define nSetsMax 80
 #define setMask ( (1ll << expo2) -1 )
 class BigInteger{
 public:
