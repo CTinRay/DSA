@@ -31,15 +31,18 @@ void shiftTest( int way , BigInteger&bigInt , int times = expo2 ){
 }
 
 BigInteger modTest(){
-	string strA = "2147483648";
+	string strA = "1018517988167243043134222844204689080525734196832968125318070224";
 	string strB = "10";
 	BigInteger a(strA);
-	BigInteger b(strB);
+	BigInteger b( set10Max );
 		
 	cout << "##### Mod Test Start #####" << endl;
 	BigInteger result;
+	cout << "a:" << endl;
+	a.printSets();
+	cout << ".........." << endl;
 	result = a % b;
-	cout << strA << " % " << strB << ":" << endl;
+	cout << strA << " % " << set10Max << ":" << endl;
 	result.printSets();
 	cout << "##### Mod Test End #####" << endl;
 	return result;
@@ -56,6 +59,23 @@ void divideTest( BigInteger& bigInt , int divisor , int times = 3 , string name 
 	cout << "##### Divide /= Test End" << endl;
 }
 
+void divide10Test(){
+	int times = 8;
+	string strA = "1018517988167243043134222844204689080525734196832968125318070224677190649881668353091698688";
+	BigInteger a(strA);
+	int b = set10Max;
+	cout << "##### Divide /= Test Start" << endl;
+	a.printSets();
+	for( int i = 0 ; i < times ; ++i ){
+		cout << strA << " /= " << set10Max << " for " << i << " times:" << endl;
+		a /= b;
+		cout << a << endl;
+		a.printSets();		
+		cout << "........." << endl;
+	}
+	cout << "##### Divide /= Test End" << endl;
+
+}
 void divideTest(){
 	cout << "##### Divide /= Test Start" << endl;
 	BigInteger bigInt("2037035976334486086268445688409378161051468393665936250636140449354381299763336706183397376");
@@ -172,16 +192,27 @@ void subTest(){
 	cout << c << endl;
 
 }
+
+void outPutTest(){
+	string strA = "1018517988167243043134222844204689080525734196832968125318070224677190649881668353091698688";
+	BigInteger a( strA );
+	cout << strA << ":" << endl;
+	cout << a ;
+	a.printSets();	
+}
 	
 int main(){
 	//shiftAndPrintTest();
 	//addAndPrintTest();
 	//mulAndPrintTest();
-	fibonacci();
+	//fibonacci();
 	//divideTest();
 	//subTest();
 	//GcdByEuclid();
 	//modTest();
+	//divide10Test();
+	//outPutTest();
+	constructAndPrintTest();
 	cout << endl 
 
 	     << "-----End of Test-----" << endl;

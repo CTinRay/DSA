@@ -31,13 +31,6 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const BigInteger&);
 	void printSets();
 
-	const int POSITIVE =1;
-	const int ZERO = 0;
-	const int NEGATIVE = -1;
-	const int GREATER = 1;
-	const int EQUAL = 0;
-	const int LESS = -1;
-
 	//private:
 
 	BigInteger AbsSub( const BigInteger&, const BigInteger& ) const; //Sub regardless of sign
@@ -53,6 +46,18 @@ public:
 
 	void shiftLeft(const int n);
 	void shiftRight(const int n);
+
+ private:
+
+
+
+	const int POSITIVE =1;
+	const int ZERO = 0;
+	const int NEGATIVE = -1;
+	const int GREATER = 1;
+	const int EQUAL = 0;
+	const int LESS = -1;
+
 };
 
 

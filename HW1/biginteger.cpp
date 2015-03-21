@@ -261,7 +261,7 @@ const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	divisor.shiftLeft( (nSets - bigInt.nSets + 1) * expo2  );
 	int cmp = divisor.AbsCmp( bigInt );
 	while( cmp == EQUAL || cmp == GREATER ){
-		if( divisor < divided ){
+		while( divisor < divided ){
 			divided = AbsSub( divided, divisor );
 		}
 		divisor.shiftRight(1);
@@ -293,9 +293,10 @@ BigInteger& BigInteger::operator/=(int divisor){
 		numberSets[ i - 1 ] += ( numberSets[ i ] % divisor ) << expo2;
 		numberSets[ i ] /= divisor;
 	}
-	if( numberSets[ nSets - 1  ] == 0 ){
+	/*	if( numberSets[ nSets - 1  ] == 0 ){
 		nSets = nSets - 1;
-	}
+		}*/
+	(*this).UpdateNSets();
 	return *this;
 }
 
@@ -321,11 +322,15 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 	BigInteger bigIntTmp( bigInt );
 	BigInteger divisor( set10Max );
 	BigInteger modded;
-	stack<Int>numStack;
-
+	stack<unsigned long long int>numStack;
+	if( bigInt.nSets == 0 ){
+		cout << 0 << endl;
+		return os;
+	}
 	while( bigIntTmp.nSets != 0 ){
 		modded = bigIntTmp % divisor;
-		Int numPart = modded.numberSets[ 0 ];
+		Int numPart = modded.numberSets[ 0 ] ;
+		//cout << numPart << endl;
 		numStack.push( numPart );
 		bigIntTmp /= set10Max ;
 	}
@@ -334,11 +339,11 @@ std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
 	cout << setfill('0');
 	numTop = numStack.top();
 	numStack.pop();	
-	cout << numTop;
+	cout << numTop ;
 	while( ! numStack.empty() ){
 		numTop = numStack.top();
 		numStack.pop();		
-		cout << setw(expo10)  << numTop;
+		cout << setw(expo10)  << numTop ;
 	}
 
 	return os;
@@ -385,6 +390,10 @@ void BigInteger::printSets(){
 	for( int i = 0 ; i < nSets ; ++i ){
 		cout << "\t" << i << ":\t" << numberSets[ i ] << endl;
 	}
+	for( int i = 0 ; i < nSets ; ++i ){
+		cout << numberSets[ i ] << " * 2^" << i * expo2 << "+" ;
+	}
+	cout << endl;
 	cout << "----------" << endl;
 }
 
@@ -394,6 +403,8 @@ void BigInteger::UpdateNSets(){
 		if( numberSets[ i ] > 0 ){
 			nSets = i + 1;
 			return;
-		}
+		}       
 	}
+	nSets = 0;
+	return;
 }
