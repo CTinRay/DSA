@@ -134,7 +134,7 @@ BigInteger BigInteger::AbsSub( const BigInteger&bigInt1, const BigInteger&bigInt
 }
 const BigInteger BigInteger::operator-(const BigInteger&bigInt) const{
 	BigInteger result;
-	if( sign != bigInt.sign ){
+	/*	if( sign != bigInt.sign ){
 		result = AbsAdd( (*this) , bigInt );
 		result.sign = sign;
 
@@ -157,7 +157,9 @@ const BigInteger BigInteger::operator-(const BigInteger&bigInt) const{
 			}
 		}
 	}
-	return result;
+	*/
+	
+	return AbsSub( *this , bigInt );
 }
 
 	
@@ -165,14 +167,14 @@ const BigInteger BigInteger::operator*(const BigInteger&bigInt) const{
 	BigInteger result;
 	for( int i = 0 ; i < nSets ; ++i ){
 		for( int j = 0 ; j < bigInt.nSets ; ++j ){
-			result.numberSets[i+j] += this->numberSets[i] * bigInt.numberSets[j];
-			result.numberSets[i+j+1] = result.numberSets[i] >> expo2;
+			result.numberSets[i+j] += numberSets[i] * bigInt.numberSets[j];
+			result.numberSets[i+j+1] += (result.numberSets[i+j] >> expo2);
 			result.numberSets[i+j] &= setMask;
 		}
 	}
 	if( sign == ZERO || bigInt.sign == ZERO ){
 		result.sign = ZERO;
-		result.nSets = 1;
+		result.nSets = 0;
 	}else{
 		result.sign = sign == bigInt.sign ? POSITIVE : NEGATIVE;
 		if( result.numberSets[ nSets + bigInt.nSets - 1 ] != 0 ){
@@ -261,7 +263,7 @@ const BigInteger BigInteger::operator%(const BigInteger&bigInt) const{
 	divisor.shiftLeft( (nSets - bigInt.nSets + 1) * expo2  );
 	int cmp = divisor.AbsCmp( bigInt );
 	while( cmp == EQUAL || cmp == GREATER ){
-		while( divisor < divided ){
+		while( divisor < divided || divisor == divided){
 			divided = AbsSub( divided, divisor );
 		}
 		divisor.shiftRight(1);
@@ -311,11 +313,17 @@ BigInteger& BigInteger::operator=(const BigInteger&bigInt){
 }
 
 
-bool iseven(){
-	return 1;
+bool BigInteger::iseven() const{
+	if( numberSets[0] % 2 == 0 ){
+		return true;
+	}
+	return false;
 }
-bool iszero(){
-	return 1;
+bool BigInteger::iszero() const{
+	if( nSets == 0  ){ 
+		return true;
+	}
+	return false;
 }
 
 std::ostream& operator<<(std::ostream&os, const BigInteger&bigInt){
@@ -363,6 +371,12 @@ bool BigInteger::operator>(const BigInteger&bigInt) const{
 	}
 }
 
+bool BigInteger::operator==(const BigInteger&bigInt) const{
+	if( this->AbsCmp( bigInt ) == EQUAL ){
+		return true;
+	}
+	return false;
+}
 
 bool BigInteger::operator<(const BigInteger&bigInt) const{
 	if( sign < bigInt.sign ){

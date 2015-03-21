@@ -2,13 +2,15 @@
 #include <iostream>
 #include <string>
 using namespace std;
-#define test2  1000000000
+/*
 #define test3 "43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875"
 #define RIGHT 1
 #define LEFT -1
+*/
 #define fib1200 "27269884455406270157991615313642198705000779992917725821180502894974726476373026809482509284562310031170172380127627214493597616743856443016039972205847405917634660750474914561879656763268658528092195715626073248224067794253809132219056382939163918400"
 #define fib1199 "16853715462723491170192455155474509439735508098002844482595024267242834241944568802972062546036647271061368074350126366761024314387612704997681075881249068173708819887547926782036364656854243643357321405009295781778073579513653790357382166526579640801"
 
+/*
 void shiftTest( int way , BigInteger&bigInt , int times = expo2 ){
 	cout << "#####Shift Test Start#####" << endl;
 	for( int i = 0 ; i < times ; ++i ){
@@ -118,25 +120,25 @@ void addAndPrintTest(){
 	}
 	bigInt.printSets();
 }
-
+*/
 void mulAndPrintTest(){
 
-	BigInteger bigInt(1);
-	for( int i = 0 ; i < 30 ; ++i ){
-		cout << " 2^" << i << ":\t" << bigInt << endl;
-		bigInt = bigInt *= 2;
+	BigInteger bigInt(3);
+	for( int i = 0 ; i < 10 ; ++i ){
+		cout << " 3^" << i << ":\t" << bigInt << endl;
+		bigInt = bigInt*bigInt;
 	}
 	bigInt.printSets();
 }
 
-string primeTable =
-	{"22801761907",
-	 "22801762441"
-	};
-
-void GcdByEuclid(){
-	BigInteger a("22801761907");
-	BigInteger b("22801762441");
+void GcdByEuclid(){/*
+1734058727985729837258409784525562517352613384221930177691843266717944268752643041076335922975426337946302393637817350834443063648202735571615 , 108174401589701477429488744193957571035046498193758049935254597093669002896721665037738935295744021845092078849812519506056793430078177639008343518035
+		   */
+	//m:116558056159050883154818716905215228752263307636642863999938309807338775
+	string strA = "1734058727985729837258409784525562517352613384221930177691843266717944268752643041076335922975426337946302393637817350834443063648202735571615";	
+	string strB = "108174401589701477429488744193957571035046498193758049935254597093669002896721665037738935295744021845092078849812519506056793430078177639008343518035";
+	BigInteger a(strA);
+	BigInteger b(strB);
 	BigInteger m = a > b ? a : b;
 	BigInteger n = a < b ? a : b;
 	cout << "m:" << endl;
@@ -145,11 +147,14 @@ void GcdByEuclid(){
 	n.printSets();
 	BigInteger zero( 0 );
 	BigInteger tmp ;
-	while( ( m % n ) > zero ){	
-		cout << tmp << endl;
+	while( ( m % n ).iszero() == false ){	
 		tmp = n;
 		n = m % n;
 		m = tmp;
+		cout << "m:" << m << endl;
+		
+		cout << "n:" << n << endl;
+		cout << "-----------" << endl;
 	}
 
 	cout << "Ans:" << endl;
@@ -175,24 +180,27 @@ void fibonacci(){
 	tmp.printSets();
 
 }
-
+/*
 void subTest(){
 	string strA = "222232244629420445529739893461909967206666939096499764990979600";
 	string strB = "137347080577163115432025771710279131845700275212767467264610201";
-	BigInteger a(strA);
-	cout << "a:" << strA << endl;
+	BigInteger a(fib1200);
+	cout << "a:" << fib1200 << endl;
 	a.printSets();
-	BigInteger b(strB);
-	cout << "b:" << strB << endl;
+	BigInteger b(fib1199);
+	cout << "b:" << fib1199 << endl;
 	b.printSets();
-	
-	BigInteger c =  a - b;
-	cout << "c:" << endl;
-	c.printSets();
-	cout << c << endl;
+	BigInteger tmp;
+	for( int i = 1198 ; i >= 1 ; --i ){
+		tmp = a - b;
+		cout << "Fibo " << i << ":" << tmp << endl;
+		a = b;
+		b = tmp;
+	}
+	tmp.printSets();
 
 }
-
+/*
 void outPutTest(){
 	string strA = "1018517988167243043134222844204689080525734196832968125318070224677190649881668353091698688";
 	BigInteger a( strA );
@@ -200,11 +208,11 @@ void outPutTest(){
 	cout << a ;
 	a.printSets();	
 }
-	
+*/	
 int main(){
 	//shiftAndPrintTest();
 	//addAndPrintTest();
-	//mulAndPrintTest();
+	mulAndPrintTest();
 	//fibonacci();
 	//divideTest();
 	//subTest();
@@ -212,10 +220,11 @@ int main(){
 	//modTest();
 	//divide10Test();
 	//outPutTest();
-	constructAndPrintTest();
-	cout << endl 
-
-	     << "-----End of Test-----" << endl;
+	//constructAndPrintTest();
+	//GcdByEuclid();
+	//	cout << endl 
+	//	     << "-----End of Test-----" << endl;
+	return 0;
 }
 
 	

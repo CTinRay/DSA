@@ -8,7 +8,7 @@ typedef unsigned long long int Int;
 #define set10Max 1000000000
 
 #define nDigits 256
-#define nSetsMax 80
+#define nSetsMax 800
 #define setMask ( (1ll << expo2) -1 )
 class BigInteger{
 public:
@@ -19,14 +19,15 @@ public:
 	~BigInteger();
 	bool operator<(const BigInteger&) const;
 	bool operator>(const BigInteger&) const;
+	bool operator == (const BigInteger&) const;
 	const BigInteger operator-(const BigInteger&) const;
 	const BigInteger operator*(const BigInteger&) const;
 	const BigInteger operator%(const BigInteger&) const;
 	BigInteger& operator*=(int);
 	BigInteger& operator/=(int);
 	BigInteger& operator=(const BigInteger&);
-	bool iseven();
-	bool iszero();
+	bool iseven() const;
+	bool iszero() const;
 	void printSets()const;
 	friend std::ostream& operator<<(std::ostream&, const BigInteger&);
 	void printSets();

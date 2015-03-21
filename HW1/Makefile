@@ -31,3 +31,7 @@ run1_7_2:
 bigIntTest:biginteger.cpp biginteger.h bigIntTest.cpp
 	g++ -std=c++11 -Wall -g3 -c biginteger.cpp bigIntTest.cpp
 	g++ -std=c++11 -Wall -g3 -o bigIntTest biginteger.o bigIntTest.o 
+
+benchmark:biginteger.cpp biginteger.h benchmark.cpp
+	g++ -std=c++11 -Wall  -c biginteger.cpp benchmark.cpp
+	g++ -std=c++11 -Wall  -o benchmark biginteger.o  benchmark.o
