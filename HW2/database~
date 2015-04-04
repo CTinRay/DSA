@@ -1,0 +1,118 @@
+#include <iostream>
+#include <map>
+#include <string>
+#include <set>
+typedef unsigned int uint; 
+typedef unsigned short ushort;
+typedef unsigned long long int ulli;
+#define NUser 24000000
+
+class Database{
+public:
+	struct ClickImpress{
+		unsigned short click;
+		unsigned int impress;
+	};
+
+	Database();
+	~Database();
+	void insert(uint click, uint impression , ulli displayURL , uint adID , uint advertiserID , ushort depth , ushort position ,
+		    uint queryID, uint keyword, uint title, uint description, uint userID);
+	ClickImpress get( uint userID, uint adID , uint queryID , ushort position , ushort depth );
+	void clicked( uint userID , void (*printFunction)(uint,uint) );
+	void impressed( uint userID1 , uint userID2 , void (*printAdIDFunction)(uint) );
+	void printProfit( uint adID, double thita);
+private:
+
+	class User{
+	public:		
+		User();		
+		void addRecord( uint adID, uint queryID, ushort position , ushort depth , ushort click , uint impress );
+		ClickImpress search( uint adID, uint queryID, uint position, uint depth );
+		void iterateClicked(void (*printFunction)(uint,uint));
+		void iterateUnionSet( User&user, void (*printAdIDFunction)(uint) );
+		
+	private:
+		class Query{
+		public:
+			Query();
+			bool isClicked();
+			void addRecord( ushort position , ushort depth , ushort click , uint impress );
+			ClickImpress getRecord( ushort position , ushort depth );
+		private:      
+			bool clicked = 0;//true if it has at least been clicked once.
+			ClickImpress record[3][3] = {{0}};
+		};
+		std::map< uint, std::map<uint,Query> > adMap;
+	};
+
+
+	class AdProperties{
+	public:
+		AdProperties();
+		void insert(ulli URL , ushort adverID , uint keyword , uint title , uint description);
+		void printProperties();			
+		void printCTRAbove(double thita);
+	private:
+		struct Property{
+			ulli URL;
+			ushort adverID;
+			uint keyword;
+			uint title;
+			uint description;
+			bool operator == ( const Property p )const{
+				if( URL == p.URL &&
+				    adverID == p.adverID &&
+				    keyword == p.keyword &&
+				    title == p.title &&
+				    description == p.description ){
+					return true;
+				}
+				return false;
+			}
+		};
+
+		struct propertyCmp{
+			bool operator()(const Property&p1, const Property&p2)const{				
+				if( p1 == p2 ){
+					return false;
+				}
+				if( p1.URL < p2.URL ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.adverID < p2.adverID ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.keyword < p2.keyword ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.title < p2.title ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.description < p2.description ){
+					return true;
+				}else{
+					return false;
+				}
+			}		
+		};
+		std::set<Property,propertyCmp> propertySet;		
+		void updateCTR();
+		bool CTRUpTodate = 0;
+		unsigned int click[NUser] = {0};
+		unsigned int impress[NUser] = {0};
+		double CTR[NUser];
+
+	};
+	User*userList;
+	std::map<uint,AdPropertySet>adPropertyMap;
+
+};

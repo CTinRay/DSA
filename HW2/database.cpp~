@@ -1,0 +1,257 @@
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <string>
+#include <set>
+#include "database.h"
+typedef unsigned int uint; 
+typedef unsigned short ushort;
+typedef unsigned long long int ulli;
+#define NUser 24000000
+class Database{
+public:
+	struct ClickImpress{
+		unsigned short click;
+		unsigned int impress;
+	};
+
+
+	Database(){
+		userList = new User[NUser];
+	}
+	~Database(){
+		delete [] userList;
+	}
+	void insert(uint click, uint impression , ulli displayURL , uint adID , uint advertiserID , ushort depth , ushort position ,
+		    uint queryID, uint keyword, uint title, uint description, uint userID){
+		userList[ userID ].addRecord( adID, queryID, position , depth , click , impression );
+		adPropertyMap[ adID ].insert( displayURL , advertiserID , keyword , title , description);			
+	}
+	ClickImpress get( uint userID, uint adID , uint queryID , ushort position , ushort depth ){
+		return userList[ userID ].search( adID, queryID, position, depth );
+	}
+	void clicked( uint userID , void (*printFunction)(uint,uint) ){
+		userList[ userID ].iterateClicked( printFunction );
+	}
+	void impressed( uint userID1 , uint userID2 , void (*printAdIDFunction)(uint) ){
+		userList[ userID1 ].iterateUnionSet( userList[ userID2 ] , printAdIDFunction );
+	}
+
+	
+private:
+
+	class User{
+	private:
+		class Query{
+		public:
+			Query(){
+			}
+			bool isClicked(){
+				return clicked;
+			}	
+			void addRecord( ushort position , ushort depth , ushort click , uint impress ){
+				clicked = clicked == 1 || click == 1;
+				record[position - 1][depth - 1].click += click;
+				record[position - 1][depth - 1].impress += impress;
+			}
+			ClickImpress getRecord( ushort position , ushort depth ){
+				return record[ position - 1 ][ depth - 1 ];
+			}
+			
+		private:      
+			bool clicked = 0;//true if it has at least been clicked once.
+			ClickImpress record[3][3] = {{0}};
+		};
+
+		unsigned int click;
+		unsigned int impress;
+		std::map< uint, std::map<uint,Query> > adMap;
+
+	public:		
+		User(){
+		}
+		void addRecord( uint adID, uint queryID, ushort position , ushort depth , ushort click , uint impress ){
+			this -> click += click;
+			this -> impress += impress;
+			adMap[ adID ][ queryID ].addRecord( position , depth , click , impress );
+		}
+		ClickImpress search( uint adID, uint queryID, uint position, uint depth ){
+			return adMap[ adID ][ queryID ].getRecord( position , depth );
+		}
+		void iterateClicked(void (*printFunction)(uint,uint)){
+			for( std::map<uint, std::map<uint,Query> >::iterator adIt = adMap.begin(); adIt != adMap.end() ; ++adIt ){
+				uint adID = adIt -> first;
+				std::map< uint , Query >&queryMap = adIt -> second;
+				for( std::map< uint , Query > :: iterator queryIt = queryMap.begin() ;
+				     queryIt != queryMap.end() ; ++queryIt ){
+					uint queryID = queryIt -> first;
+					Query&query = queryIt -> second;
+					if( query.isClicked() ){
+						(*printFunction)( adID , queryID );
+					}
+				}
+			}
+		}
+		void iterateUnionSet( User&user, void (*printAdIDFunction)(uint) )  {
+
+			std::map< uint , std::map< uint, Query > >::iterator adIDIt2 = user.adMap.begin();
+			for(std::map< uint , std::map< uint, Query > >::iterator adIDIt1 = this->adMap.begin();
+			    adIDIt1 != this -> adMap.begin() ; ++adIDIt1 ){
+				while( adIDIt2 -> first <= adIDIt1 -> first ){
+					if( adIDIt2 -> first == adIDIt1 -> first ){
+						(*printAdIDFunction)( adIDIt1 -> first );
+						break;
+					}
+					if( adIDIt2 == user.adMap.end() ){
+						break;
+					}
+					++adIDIt2;
+				}
+			}
+		}
+	};
+
+
+	class AdPropertySet{
+	public:
+		AdPropertySet(){}
+		void insert(ulli URL , ushort adverID , uint keyword , uint title , uint description){
+			Property property = {
+				URL,
+				adverID,
+				keyword,
+				title,
+				description
+			};
+			properties.insert(property);
+		}
+		void printProperties(){
+			for( std::set< Property , propertyCmp >::iterator it = properties.begin();
+			     it != properties.end() ; ++ it ){
+				
+				std::cout << it -> URL << "\t"
+					  << it -> adverID << "\t"
+					  << it -> keyword << "\t"
+					  << it -> title << "\t"
+					  << it -> description << "\t"
+					  << std::endl;
+			}
+		}
+			
+	private:
+				struct Property{
+		ulli URL;
+		ushort adverID;
+		uint keyword;
+		uint title;
+		uint description;
+		bool operator == ( const Property p )const{
+			if( URL == p.URL &&
+			    adverID == p.adverID &&
+			    keyword == p.keyword &&
+			    title == p.title &&
+			    description == p.description ){
+				return true;
+			}
+			return false;
+		}
+	};
+
+			struct propertyCmp{
+			bool operator()(const Property&p1, const Property&p2)const{				
+				if( p1 == p2 ){
+					return false;
+				}
+				if( p1.URL < p2.URL ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.adverID < p2.adverID ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.keyword < p2.keyword ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.title < p2.title ){
+					return true;
+				}else{
+					return false;
+				}
+				if( p1.description < p2.description ){
+					return true;
+				}else{
+					return false;
+				}
+			}		
+		};
+		std::set<Property,propertyCmp> properties;
+		
+	};
+
+	User*userList;
+	std::map<uint,AdPropertySet>adPropertyMap;
+
+};
+			
+void readFile( char*fileName , Database*database ){	
+	std::fstream bigDataFS;
+	bigDataFS.open( fileName , std::fstream::in );
+	if( !bigDataFS.is_open() ){
+		std::cout << "Open file error!!" << std::endl;
+		return;
+	}
+	std::cout << "Start Reading" << std::endl;
+	uint click;
+	uint impression;
+	ulli displayURL;
+	uint adID;
+	uint advertiserID;
+	ushort depth;
+	ushort position;
+	uint queryID;
+	uint keyword;
+	uint title;
+	uint description;
+	uint userID;
+	int n = 0;
+	int m = 0;
+	while( bigDataFS.peek() != EOF ){
+		if( n == 10 ){
+			std::cout << "Read:" << m*10 << std::endl;
+			n = 0;
+			m += 1;
+		}
+		bigDataFS >> click
+			  >> impression
+			  >> displayURL
+			  >> adID
+			  >> advertiserID
+			  >> depth
+			  >> position
+			  >> queryID
+			  >> keyword
+			  >> title
+			  >> description
+			  >> userID;
+		database -> insert( click, impression, displayURL, adID, advertiserID, depth, position, queryID,
+				    keyword, title, description, userID);
+	}		
+}	
+
+	
+
+
+int main( int argc , char**argv ){
+	Database*database = new Database;
+	std::cout << "Open File" << argv[1] << std::endl;
+	readFile( argv[1] , database );
+	std::cout << "Read finished" << std::endl;
+	int wait;
+	std::cin >> wait;
+	return 0;
+}
