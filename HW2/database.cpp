@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <set>
-#include "./database.h"
+#include "database.h"
 
 Database::Database(){
 	userList = new User[NUser];
@@ -33,11 +33,32 @@ void Database::printClicked( uint userID  ){
 
 //Implement the impressed function described in spec
 void Database::printImpressed( uint userID1 , uint userID2 ){
-	userList[ userID1 ].printUnionSet( userList[ userID2 ] );
+	User&user1 = userList[ userID1 ];
+	User&user2 = userList[ userID2 ];	       
+	auto adIDIt1 = user1.adMap.begin();
+	auto adIDIt2 = user2.adMap.begin();
+	for(; adIDIt1 != user1.adMap.end() ; ++adIDIt1 ){
+		while( adIDIt2 -> first <= adIDIt1 -> first ){
+			if( adIDIt2 -> first == adIDIt1 -> first ){
+				std::cout << ( adIDIt1 -> first ) << std::endl;
+				adPropertyMap[ adIDIt1 -> first ].printProperties();
+				break;
+			}
+			if( adIDIt2 == user2.adMap.end() ){
+				break;
+			}
+			++adIDIt2;
+		}
+	}
+
 }
 
-void Database::printProfit(uint adId, double thita){
-	//	adPropertyMap[ adId ].printCTRAbove( thita );
+void Database::printProfit(uint adID, double thita){
+	for( int i = 0 ; i < NUser ; ++i ){
+		if( userList[ i ].getCTR(adID) >= thita ){
+			std::cout << i << std::endl;
+		}
+	}
 }
 
 //Constrct function of Query
@@ -65,12 +86,36 @@ Database::ClickImpress Database::User::Query::getRecord( ushort position , ushor
 Database::User::User(){
 }
 
+void Database::User::updateCTR(){
+	for( auto CTRit = adCTRMap.begin() ; CTRit != adCTRMap.end() ; ++CTRit ){
+		CTR&ctr = CTRit -> second;
+		ctr.CTR = ctr.impress == 0 ? 0 : (double)ctr.click / (double)ctr.impress ;
+		/*		std::cout << "Ad:" << CTRit -> first
+			  << "\tImpress: " << ctr.impress
+			  << "\tClick:" << ctr.click
+			  << "\tCTR:" << ctr.CTR 
+			  << std::endl;*/
+	}
+}
+
+double Database::User::getCTR(uint adID){
+	if( adCTRMap.count( adID ) == 0 ){
+		return -1;
+	}
+	if( !CTRUpToDate ){
+		updateCTR();
+	}
+	return adCTRMap[adID].CTR;
+}
+	
 
 void Database::User::addRecord( uint adID, uint queryID, ushort position , ushort depth , ushort click , uint impress ){
 	adMap[ adID ][ queryID ].addRecord( position , depth , click , impress );
-	Database::User::CTR*ctr = &(adCTRMap[ adID ]);
-	ctr -> impress += impress;
-	ctr -> click += click;	
+	CTR&ctr = (adCTRMap[ adID ]);
+	ctr.impress += impress;
+	ctr.click += click;	
+	//	std::cout << "Impress: " << ctr.impress << "\tClick:" << ctr.click << std::endl;
+	
 }
 
 //Build for get function
@@ -96,26 +141,6 @@ void Database::User::printClicked(){
 	}
 }
 
-//Build for impress function
-void Database::User::printUnionSet( User&user )  {
-	std::map< uint , std::map< uint, Query > >::iterator adIDIt2 = user.adMap.begin();
-	for(std::map< uint , std::map< uint, Query > >::iterator adIDIt1 = this->adMap.begin();
-	    adIDIt1 != this -> adMap.begin() ; ++adIDIt1 ){
-		while( adIDIt2 -> first <= adIDIt1 -> first ){
-			if( adIDIt2 -> first == adIDIt1 -> first ){
-				std::cout << ( adIDIt1 -> first ) << std::endl;
-				break;
-			}
-			if( adIDIt2 == user.adMap.end() ){
-				break;
-			}
-			++adIDIt2;
-		}
-	}
-}
-
-
-
 //Constructor of AdProperSet
 Database::AdProperties::AdProperties(){
 }
@@ -136,10 +161,9 @@ void Database::AdProperties::insert(ulli URL , ushort adverID , uint keyword , u
 
 //Print the properties of the ad with the id
 void Database::AdProperties::printProperties(){
-	for( std::set< Property , propertyCmp >::iterator it = propertySet.begin();
-	     it != propertySet.end() ; ++ it ){
-				
-		std::cout << it -> URL << "\t"
+	for( auto it = propertySet.begin(); it != propertySet.end(); ++ it ){
+		std::cout << "\t"
+			  << it -> URL << "\t"
 			  << it -> adverID << "\t"
 			  << it -> keyword << "\t"
 			  << it -> title << "\t"
