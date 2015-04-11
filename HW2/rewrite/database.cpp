@@ -31,9 +31,9 @@ void Database::insert(ushort&click,
 	entry.click = click;
 	entry.impression = impression;
 	entry.pairDepthPosition =( (depth << 2) + position);
-	std::cout << (uint) entry.pairDepthPosition << std::endl;
+	//std::cout << (uint) entry.pairDepthPosition << std::endl;
 	entry.ptrProperty = &(*itProperty);
-	std::cout << nEntry << ":" << (int)depth << "," << (int)position << std::endl;
+	//std::cout << nEntry << ":" << (int)depth << "," << (int)position << std::endl;
 };
 
 std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator
@@ -111,7 +111,7 @@ void Database::printGet( uint userID, uint adID , uint queryID , ushort position
 	int firstEntryIndex = getFirstMatchIndex( entry );
 	int click = 0;
 	int impression = 0;
-       	std::cout << (int) pairDP << std::endl;
+       	///std::cout << (int) pairDP << std::endl;
 	for( int i = firstEntryIndex ;
 	     //	     std::cout << i << ":" << 
 	     dataEntries[i].userID == userID &&
@@ -128,20 +128,27 @@ void Database::printGet( uint userID, uint adID , uint queryID , ushort position
 
 void Database::printClicked( uint userID  ){
 	if( !ready ){
-		///		std::sort( dataEntries, dataEntries + nEntry , entryCmp );
+		//std::sort( dataEntries, dataEntries + nEntry , entryCmp );
 		ready = true;
 	}
 	DataEntry targetEntry;
 	targetEntry.userID = userID;
-	int firstMatchIndex = getFirstMatchIndex( targetEntry );
-	for( int i = firstMatchIndex ; dataEntries[i].userID == userID ; ++i ){
-		DataEntry&entry = dataEntries[i];
-		std::cout << entry.adID << "\t"
-			  << entry.queryID << std::endl;
-		while( dataEntries[i].userID == userID &&
-		       dataEntries[i].adID == entry.adID &&
-		       dataEntries[i].queryID == entry.queryID ){
-			i = i + 1;
+	int index = getFirstMatchIndex( targetEntry );
+	//std::cout << index << std::endl;
+	while( dataEntries[ index ].userID == userID ){
+		auto adID = dataEntries[index].adID;
+		auto queryID = dataEntries[index].queryID;
+		if( dataEntries[ index ].click > 0 ){
+			std::cout << adID << "\t"
+				  << queryID << std::endl;
+			while( dataEntries[index].userID == userID &&
+			       dataEntries[index].adID == adID &&
+			       dataEntries[index].queryID == queryID ){
+				index += 1;
+			}
+			
+		}else{
+			index += 1;
 		}
 	}
 }
@@ -157,10 +164,13 @@ void Database::printImpressed( uint userID1 , uint userID2 ){
 	targetEntry1.userID = userID1;
 	DataEntry targetEntry2;
 	targetEntry2.userID = userID2;
-	int index1 = getFirstMatchIndex( targetEntry1 );
+	int index1 = getFirstMatchIndex( targetEntry1 );	
 	int index2 = getFirstMatchIndex( targetEntry2 );
+	std::cout << "index1:" << index1 << std::endl
+		  << "index2:" << index2 << std::endl;
 	while( dataEntries[index1].userID == userID1 &&
 	       dataEntries[index2].userID == userID2 ){
+
 		if( dataEntries[index1].adID < dataEntries[index2].adID ){
 			index1 += 1;
 		}else if( dataEntries[index1].adID > dataEntries[index2].adID ){
@@ -232,10 +242,10 @@ int Database::entryCmp( const void*p1, const void*p2){
 	    ( a.queryID == b.queryID &&
 	      a.pairDepthPosition < b.pairDepthPosition  ) ||
 	    ( a.pairDepthPosition == b.pairDepthPosition
-	      && a.impression < b.impression ) ||
-	    ( a.impression == b.impression &&
-	      a.click < b.click )||
-	    ( a.click == b.click  && a.ptrProperty < b.ptrProperty)
+	      && a.click < b.click ) ||
+	    ( a.click == b.click &&
+	      a.impression < b.impression )||
+	    ( a.impression == b.impression && a.ptrProperty < b.ptrProperty )
 	    ){
 		return -1;
 	    }
@@ -249,10 +259,10 @@ bool Database::entryCmp( const DataEntry&a, const DataEntry&b){
 	    ( a.queryID == b.queryID &&
 	      a.pairDepthPosition < b.pairDepthPosition ) ||
 	    ( a.pairDepthPosition == b.pairDepthPosition
-	      && a.impression < b.impression ) ||
-	    ( a.impression == b.impression &&
-	      a.click < b.click )||
-	    ( a.click == b.click && a.ptrProperty < b.ptrProperty )
+	      && a.click < b.click ) ||
+	    ( a.click == b.click &&
+	      a.impression < b.impression )||
+	    ( a.impression == b.impression && a.ptrProperty < b.ptrProperty )
 	    ){
 		return true;
 	}
@@ -279,4 +289,5 @@ void Database::printList(){
 			  << dataEntries[i].impression << "\t"
 			  << dataEntries[i].ptrProperty << std::endl;
 	}
+	//	std::cout << "CMP12:" << entryCmp( (void*) &dataEntries[1] , (void*) &dataEntries[2] ) << std::endl;
 }
