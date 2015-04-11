@@ -33,7 +33,14 @@ int main(){
 	auto a = (std::set<AdProperty,AdPropertyCmp>::iterator) 0;
 	auto b = (std::set<AdProperty,AdPropertyCmp>::iterator) 0;
 	
-	std::cout << ( a != (std::set<AdProperty,AdPropertyCmp>::iterator) 0 )<< std::endl;
-	std::cout << sizeof(std::set<int>::iterator) << std::endl;
+	std::set<int>set1;
+	std::set<int>::iterator it = set1.insert(100).first;
+	void*vit =  (void*)&(*it);
+	std::cout << (*(int*)vit) << std::endl;
+	for( int i = 0 ; i < 1000000 ; ++i ){
+		set1.insert( i );
+	}
+	std::cout << (*(int*)vit) << std::endl;						    
+	
 }
 

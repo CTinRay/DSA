@@ -9,19 +9,20 @@ typedef unsigned short ushort;
 typedef unsigned long long int ulli;
 #define NUser 24000000
 #define NEntries 150000000
-
+//#define NEntries 13
 
 class Database{
 public:
 	Database();
 	~Database();
-	void insert(ushort click, uint impression , ulli displayURL , uint adID , uint advertiserID , ushort depth , ushort position ,
-		    uint queryID, uint keyword, uint title, uint description, uint userID);
+	void insert(ushort&click, uint&impression , ulli&displayURL , uint&adID , uint&advertiserID , std::uint8_t&depth , std::uint8_t&position ,
+		    uint&queryID, uint&keyword, uint&title, uint&description, uint&userID);
 	void printGet( uint userID, uint adID , uint queryID , ushort position , ushort depth );
 	void printClicked( uint userID  );
 	void printImpressed( uint userID1 , uint userID2 );
 	void printProfit( uint adID, double thita);
 	void sort();
+	void printList();
 	struct AdProperty{
 		ulli displayURL;
 		uint advertiserID;
@@ -77,8 +78,8 @@ private:
 		uint queryID = 0;
 		ushort click = 0;
 		uint impression = 0;
-		std::int8_t pairDepthPosition = 0;
-		std::set<AdProperty,AdPropertyCmp>::iterator itProperty = (std::set<AdProperty,AdPropertyCmp>::iterator) 0;
+		std::uint8_t pairDepthPosition = 0;
+		const AdProperty * ptrProperty =  0;
 	};
 
 
@@ -90,8 +91,8 @@ private:
 	static bool entryCmp( const DataEntry&a, const DataEntry&b);
 	int getFirstMatchIndex(uint userID, uint adID, uint queryID,uint depth, uint position);	
 	int getFirstMatchIndex( const DataEntry&entry );
-	static void printAdProperties(std::set<AdProperty,AdPropertyCmp>::iterator it);
-	
+	static void printAdProperties(const AdProperty*it);	
+	static int entryCmp( const void*p1, const void*p2);
 	
 };
 
