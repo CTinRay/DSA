@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <sys/types.h>
+#include <iostream>
+#include <map>
+#include <set>
+#include <unordered_set>
+typedef unsigned long long int ulli;
+typedef unsigned int uint;
+
+struct AdProperty{
+	ulli displayURL;
+	uint advertiserID;
+	uint keywordID;
+	uint titleID;
+	uint descriptionID;
+};
+
+
+
+int main(){		
+	std::set<int>set1;
+	std::set<int>::iterator it = set1.insert( 9 ).first;
+	for( int i = 0 ; i < 1000000 ; ++i ){
+		set1.insert( i );
+	}
+	std::cout << *it<< std::endl;
+	std::cout << sizeof(std::set<int>::iterator) << std::endl;
+}
+
