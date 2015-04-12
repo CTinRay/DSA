@@ -73,7 +73,8 @@ int main( int argc , char**argv ){
 	readFile( argv[1] , database );
 	std::cout << "Read finished" << std::endl;
 	database -> sort();
-	database -> printList();
+	//database -> printList();
+	database -> checkSort();
 	std::string command;
 	std::cin >> command;
 	while( command != "quit" ){

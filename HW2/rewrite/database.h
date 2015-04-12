@@ -23,6 +23,7 @@ public:
 	void printProfit( uint adID, double thita);
 	void sort();
 	void printList();
+	void checkSort();
 	struct AdProperty{
 		ulli displayURL;
 		uint advertiserID;
@@ -88,12 +89,13 @@ private:
 	DataEntry dataEntries[ NEntries ];
 	int nEntry = 0;
 	bool ready = false;
-	static bool entryCmp( const DataEntry&a, const DataEntry&b);
+	static bool entryCmpA( const DataEntry&a, const DataEntry&b);
+	static bool entryEqual( const DataEntry&a, const DataEntry&b);
 	int getFirstMatchIndex(uint userID, uint adID, uint queryID,uint depth, uint position);	
 	int getFirstMatchIndex( const DataEntry&entry );
 	static void printAdProperties(const AdProperty*it);	
-	static int entryCmp( const void*p1, const void*p2);
-	
+	static int entryCmp( const void*p1, const void*p2);	
+	void printEntry( int index );
 };
 
 
