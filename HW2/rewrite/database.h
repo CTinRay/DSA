@@ -81,7 +81,7 @@ private:
 		       ushort click,
 		       uint impression
 		       );
-		AdProperty*insert( AdProperty*adProperty );
+		//AdProperty*insert( AdProperty*adProperty );
 		void printProfit( double thita );
 			
 	private:
@@ -92,6 +92,7 @@ private:
 		};
 		std::unordered_map<uint,CTR> userCTRMap;
 		std::set<AdProperty,AdPropertyCmp>propertySet;
+		//std::set<AdProperty*,AdPropertyPtrCmp>propertyPtrSet;
 	};	
 
 
@@ -119,9 +120,10 @@ private:
 	static int entryIndCmp( const void*p1, const void*p2);	
 	int getFirstMatchIndex(uint userID, uint adID, uint queryID,uint depth, uint position);	
 	int getFirstMatchIndex( const DataEntry&entry );
-	int getFirstMatchPtrIndex( const DataEntry*entry );
+	int getFirstMatchPtrIndex( const DataEntry*entry, int );
 	static void printAdProperties(const AdProperty*it);	
 	void printEntry( int index );
+	void updateClicked();
 	//AdProperty adPropertyPool[ NAdProperty ];
 	//AdProperty*adPropertyPoolPtr;
 };
