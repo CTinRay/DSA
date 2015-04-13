@@ -8,7 +8,7 @@
 #include <set>
 
 Database::Database(){
-
+	//	adPropertyPoolPtr = adPropertyPool;
 }
 
 void Database::insert(ushort&click,
@@ -23,17 +23,32 @@ void Database::insert(ushort&click,
 		      uint&titleID,
 		      uint&descriptionID,
 		      uint&userID){
-	const std::set<AdProperty,AdPropertyCmp>::iterator itProperty = adPropertyMap[ adID ].insert( displayURL, userID, advertiserID, keywordID, titleID, descriptionID, click, impression );
-	DataEntry&entry = dataEntries[ nEntry++ ];
-	entry.userID=userID;
-	entry.adID = adID;
-	entry.queryID = queryID;
-	entry.click = click;
-	entry.impression = impression;
-	entry.pairDepthPosition =( (depth << 2) + position);
+	DataEntry*entryPtr = &dataEntries[ nEntry ];
+	entryPtr->userID=userID;
+	entryPtr->adID = adID;
+	entryPtr->queryID = queryID;
+	entryPtr->click = click;
+	entryPtr->impression = impression;
+	entryPtr->pairDepthPosition =( (depth << 2) + position);       
+	entryPtrs[ nEntry++ ] = entryPtr;
+	entryPtr -> ptrProperty = &(*adPropertyMap[adID].insert( displayURL,
+								 userID, advertiserID,
+								 keywordID,
+								 titleID,
+								 descriptionID,
+								 click,
+								 impression ));
 	//std::cout << (uint) entry.pairDepthPosition << std::endl;
-	entry.ptrProperty = &(*itProperty);
-	//std::cout << nEntry << ":" << (int)depth << "," << (int)position << std::endl;
+	//std::cout << nEntry << ":" << (int)depth << "," << (int)position << std::endl;       
+	/*adPropertyPoolPtr -> displayURL = displayURL;
+	adPropertyPoolPtr -> advertiserID = advertiserID;
+	adPropertyPoolPtr -> keywordID = keywordID;
+	adPropertyPoolPtr -> titleID = titleID;
+	adPropertyPoolPtr -> descriptionID = descriptionID;
+	if( entryPtr -> ptrProperty == adPropertyPoolPtr ){
+		adPropertyPoolPtr += 1;
+	}	              
+	*/
 };
 
 std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator
@@ -45,18 +60,24 @@ Database::AdProperties::insert(ulli displayURL,
 			       ushort click,
 			       uint impression){
 	
-	CTR&ctr = userCTRMap[ userID ];
-	ctr.click += click;
-	ctr.impression += impression;
+	//CTR&ctr = userCTRMap[ userID ];
+	//ctr.click += click;
+	//ctr.impression += impression;
 	return propertySet.insert( {displayURL,
 				advertiserID,
 				keywordID,
 				titleID,
 				descriptionID
 				} ).first;
-
+	
 };
-
+/*
+Database::AdProperty*Database::AdProperties::insert( Database::AdProperty*adPropertyPtr ){
+	auto pair = propertyPtrSet.insert( adPropertyPtr );
+	if( pair.second ){ return adPropertyPtr; };
+	return *(pair.first);
+}
+*/
 /*
 bool operator<(const std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&a,
 	       const std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&b){
@@ -97,6 +118,24 @@ int Database::getFirstMatchIndex(const DataEntry& entry ){
 }
 	
 
+int Database::getFirstMatchPtrIndex(const DataEntry* entry ){
+	int lowerBound = 0;
+	int upperBound = nEntry;
+
+	while( upperBound - lowerBound 	> 0 ){
+		int mid = lowerBound + ((upperBound - lowerBound) >> 1);
+		//		std::cout << "low:" << lowerBound << "\tmid:" << mid << "\tup:" << upperBound << std::endl;
+		if( entryPtrCmpA( entryPtrs[ mid ] , entry)   ){
+			lowerBound = mid + 1;
+		}else{
+			upperBound = mid;
+		}
+	}
+		
+	return upperBound;
+}
+
+
 void Database::printGet( uint userID, uint adID , uint queryID , ushort position , ushort depth ){
 	if( !ready ){
 		///		std::sort( dataEntries, dataEntries + nEntry , entryCmp );
@@ -123,7 +162,7 @@ void Database::printGet( uint userID, uint adID , uint queryID , ushort position
 		click += dataEntries[i].click;
 		impression += dataEntries[i].impression;
 	}
-	std::cout << click << "\t" << impression << std::endl;
+	std::cout << click << " " << impression << std::endl;
 }
 
 void Database::printClicked( uint userID  ){
@@ -139,7 +178,7 @@ void Database::printClicked( uint userID  ){
 		auto adID = dataEntries[index].adID;
 		auto queryID = dataEntries[index].queryID;
 		if( dataEntries[ index ].click > 0 ){
-			std::cout << adID << "\t"
+			std::cout << adID << " "
 				  << queryID << std::endl;
 			while( dataEntries[index].userID == userID &&
 			       dataEntries[index].adID == adID &&
@@ -167,10 +206,10 @@ void Database::printImpressed( uint userID1 , uint userID2 ){
 	int index1 = getFirstMatchIndex( targetEntry1 );	
 	int index2 = getFirstMatchIndex( targetEntry2 );
 	//Debug Info
-	std::cout << "index1:" << index1 << std::endl;
-	printEntry( index1 );
-	std::cout << "index2:" << index2 << std::endl;
-	printEntry( index2 );
+	//std::cout << "index1:" << index1 << std::endl;
+	//printEntry( index1 );
+	//std::cout << "index2:" << index2 << std::endl;
+	//printEntry( index2 );
 	//End Info
 	while( dataEntries[index1].userID == userID1 &&
 	       dataEntries[index2].userID == userID2 ){
@@ -182,17 +221,17 @@ void Database::printImpressed( uint userID1 , uint userID2 ){
 		}else if( dataEntries[index1].adID == dataEntries[index2].adID ){
 			auto adID = dataEntries[index1].adID;
 			std::cout << adID << std::endl;
-			std::set<AdProperty*>uniq;
+			std::set<AdProperty,AdPropertyCmp>uniq;
 			while( dataEntries[index1].userID == userID1 && dataEntries[index1].adID == adID ){
-				uniq.insert( (AdProperty*)dataEntries[index1].ptrProperty );
+				uniq.insert( *dataEntries[index1].ptrProperty );
 				++index1;
 			}
 			while( dataEntries[index2].userID == userID2 && dataEntries[index2].adID == adID ){
-				uniq.insert( (AdProperty*)dataEntries[index2].ptrProperty );
+				uniq.insert( *dataEntries[index2].ptrProperty );
 				++index2;
 			}
 			for( auto it = uniq.begin() ; it != uniq.end() ; ++it ){
-				printAdProperties( *it );
+				printAdProperties( &(*it) );
 			}
 		}
 	}
@@ -200,10 +239,10 @@ void Database::printImpressed( uint userID1 , uint userID2 ){
 
 void Database::printAdProperties( const AdProperty*ptrProperty){
 	std::cout << "\t"
-		  << ptrProperty -> displayURL << "\t"
-		  << ptrProperty -> advertiserID << "\t"
-		  << ptrProperty -> keywordID << "\t"
-		  << ptrProperty -> titleID << "\t"
+		  << ptrProperty -> displayURL << " "
+		  << ptrProperty -> advertiserID << " "
+		  << ptrProperty -> keywordID << " "
+		  << ptrProperty -> titleID << " "
 		  << ptrProperty -> descriptionID << std::endl;
 };
 
@@ -218,6 +257,7 @@ void Database::printProfit(uint adID, double thita){
 Database::AdProperties::AdProperties(){}
 
 void Database::AdProperties::printProfit( double thita ){
+
 	for( int uid = 0 ; uid < NUser ; ++uid ){
 		if( userCTRMap.count( uid ) == 0 ){
 			continue;
@@ -243,6 +283,10 @@ int Database::entryCmp( const void*p1, const void*p2){
 	}		       
 };
 
+bool Database::entryPtrCmpA( const DataEntry*a , const DataEntry*b ){
+	return entryCmpA( *a, *b );
+}
+
 bool Database::entryCmpA( const DataEntry&a, const DataEntry&b){
 	if( a.userID < b.userID ) return true;	
 	if( a.userID > b.userID ) return false;	
@@ -252,12 +296,12 @@ bool Database::entryCmpA( const DataEntry&a, const DataEntry&b){
 	if( a.queryID > b.queryID ) return false;
 	if( a.pairDepthPosition < b.pairDepthPosition ) return true;
 	if( a.pairDepthPosition > b.pairDepthPosition ) return false;
-	if( a.click < b.click ) return true;
-	if( a.click > b.click ) return false;
-	if( a.impression < b.impression ) return true;
-	if( a.impression > b.impression ) return false;
-	if( a.ptrProperty < b.ptrProperty ) return true;
-	if( a.ptrProperty > b.ptrProperty ) return false;
+	//if( a.click < b.click ) return true;
+	//if( a.click > b.click ) return false;
+	//if( a.impression < b.impression ) return true;
+	//if( a.impression > b.impression ) return false;
+	//if( a.ptrProperty < b.ptrProperty ) return true;
+	//if( a.ptrProperty > b.ptrProperty ) return false;
 	return false;
 };
 
@@ -267,9 +311,9 @@ bool Database::entryEqual( const DataEntry&a, const DataEntry&b){
 	if( a.adID != b.adID ) return false;
 	if( a.queryID != b.queryID ) return false;
 	if( a.pairDepthPosition != b.pairDepthPosition ) return false;
-	if( a.click != b.click ) return false;
-	if( a.impression != b.impression ) return false;
-	if( a.ptrProperty != b.ptrProperty ) return false;
+	//if( a.click != b.click ) return false;
+	//if( a.impression != b.impression ) return false;
+	//if( a.ptrProperty != b.ptrProperty ) return false;
 	return true;
 };
 
@@ -278,8 +322,9 @@ bool Database::entryEqual( const DataEntry&a, const DataEntry&b){
 void Database::sort(){
 	std::cout << "start sorting" << std::endl;
 	std::cout << "nEntry:" << nEntry << std::endl;
+	std::sort( entryPtrs , entryPtrs + nEntry - 1 , entryPtrCmpA );
 	//std::sort( dataEntries, dataEntries + nEntry - 1 , entryCmpA );
-	qsort(dataEntries,nEntry-1,sizeof(DataEntry), Database::entryCmp);
+	//qsort(dataEntries,nEntry-1,sizeof(DataEntry), Database::entryCmp);
 	std::cout << "end sorting" << std::endl;
 	ready = true;
 }
@@ -300,14 +345,14 @@ void Database::printList(){
 }
 
 void Database::checkSort(){
-	for( int i = 0 ; i < nEntry -1 ; ++i ){
+		for( int i = 0 ; i < nEntry -1 ; ++i ){
 		if( !entryCmpA(dataEntries[i],dataEntries[i+1])
 		    && !entryEqual( dataEntries[i] , dataEntries[i+1]) ){
-			std::cout << "Sort Err at :  " << i << std::endl;
+			/*std::cout << "Sort Err at :  " << i << std::endl;
 			std::cout << "nEntry" << nEntry << std::endl;
-			return;
+			return;*/
 		}
-	}
+		}
 	std::cout << "checkSort End!!" << std::endl;
 }
 	

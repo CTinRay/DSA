@@ -7,6 +7,7 @@
 			
 void readFile( char*fileName , Database*database ){	
 	std::fstream bigDataFS;
+	std::fstream::sync_with_stdio(false);
 	bigDataFS.open( fileName , std::fstream::in );
 	if( !bigDataFS.is_open() ){
 		std::cout << "Open file error!!" << std::endl;
@@ -41,13 +42,13 @@ void readFile( char*fileName , Database*database ){
 			  >> description
 			  >> userID;
 		if( n == 1000000 ){
-			std::cout << "Read:" << m*10000 << "\t"				
+			//			std::cout << "Read:" << m*10000 << "\t"				
 				/*				  << click << "\t" 
 				  << impression << "\t"
 				  << displayURL << "\t"
 				  << adID << "\t"
 				  << userID << "\t"*/
-				  << std::endl;
+			//	  << std::endl;
 			if( bigDataFS.eof() ){
 				std::cout << "EOF" ;
 				break;

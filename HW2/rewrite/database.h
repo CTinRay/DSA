@@ -9,6 +9,7 @@ typedef unsigned short ushort;
 typedef unsigned long long int ulli;
 #define NUser 24000000
 #define NEntries 150000000
+#define NAdProperty 6000000
 //#define NEntries 13
 
 class Database{
@@ -34,23 +35,43 @@ public:
 
 	struct AdPropertyCmp{
 		bool operator()(const AdProperty&a,const AdProperty&b){
-			if( ( a.displayURL < b.displayURL ) ||
-			    ( a.displayURL == b.displayURL && a.advertiserID < b.advertiserID ) ||
-			    ( a.advertiserID == b.advertiserID && a.keywordID < b.keywordID ) ||
-			    ( a.keywordID == b.keywordID && a.descriptionID < b.descriptionID )
-			    ){
-				return true;
-			}
+			if( a.displayURL < b.displayURL ) return true;
+			if( a.displayURL > b.displayURL ) return false;
+			if( a.advertiserID < b.advertiserID ) return true;
+			if( a.advertiserID > b.advertiserID ) return false;
+			if( a.keywordID < b.keywordID ) return true;
+			if( a.keywordID > b.keywordID ) return false;
+			if( a.titleID < b.titleID ) return true;
+			if( a.titleID > b.titleID ) return false;
+			if( a.descriptionID < b.descriptionID ) return true;
+			if( a.descriptionID > b.descriptionID ) return false;
 			return false;
 		}
 	};
 
+	struct AdPropertyPtrCmp{
+		bool operator()(const AdProperty*a,const AdProperty*b){
+			if( a->displayURL < b->displayURL ) return true;
+			if( a->displayURL > b->displayURL ) return false;
+			if( a->advertiserID < b->advertiserID ) return true;
+			if( a->advertiserID > b->advertiserID ) return false;
+			if( a->keywordID < b->keywordID ) return true;
+			if( a->keywordID > b->keywordID ) return false;
+			if( a->titleID < b->titleID ) return true;
+			if( a->titleID > b->titleID ) return false;
+			if( a->descriptionID < b->descriptionID ) return true;
+			if( a->descriptionID > b->descriptionID ) return false;
+			return false;
+		}
+	};
+
+	
 private:			
 
 	class AdProperties{
 	public:
 		AdProperties();
-		std::set<AdProperty,AdPropertyCmp>::iterator
+		std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator
 		insert(
 		       ulli displayURL,
 		       uint adID,uint advertiserID,
@@ -60,6 +81,7 @@ private:
 		       ushort click,
 		       uint impression
 		       );
+		AdProperty*insert( AdProperty*adProperty );
 		void printProfit( double thita );
 			
 	private:
@@ -67,7 +89,7 @@ private:
 			uint click = 0;
 			uint impression = 0;
 			double CTR = -1;
-		};						    
+		};
 		std::unordered_map<uint,CTR> userCTRMap;
 		std::set<AdProperty,AdPropertyCmp>propertySet;
 	};	
@@ -86,16 +108,22 @@ private:
 
 	friend AdProperty;
 	std::map< uint , AdProperties > adPropertyMap;
+	DataEntry*entryPtrs[ NEntries ];
 	DataEntry dataEntries[ NEntries ];
 	int nEntry = 0;
 	bool ready = false;
+	static bool entryPtrCmpA( const DataEntry*a, const DataEntry*b);
 	static bool entryCmpA( const DataEntry&a, const DataEntry&b);
 	static bool entryEqual( const DataEntry&a, const DataEntry&b);
+	static int entryCmp( const void*p1, const void*p2);
+	static int entryIndCmp( const void*p1, const void*p2);	
 	int getFirstMatchIndex(uint userID, uint adID, uint queryID,uint depth, uint position);	
 	int getFirstMatchIndex( const DataEntry&entry );
+	int getFirstMatchPtrIndex( const DataEntry*entry );
 	static void printAdProperties(const AdProperty*it);	
-	static int entryCmp( const void*p1, const void*p2);	
 	void printEntry( int index );
+	//AdProperty adPropertyPool[ NAdProperty ];
+	//AdProperty*adPropertyPoolPtr;
 };
 
 
