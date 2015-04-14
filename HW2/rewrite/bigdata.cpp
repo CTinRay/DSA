@@ -13,7 +13,8 @@ void readFile( char*fileName , Database*database ){
 		std::cout << "Open file error!!" << std::endl;
 		return;
 	}
-	std::cout << "Start Reading" << std::endl;
+	
+	//std::cout << "Start Reading" << std::endl;
 	ushort click;
 	uint impression;
 	ulli displayURL;
@@ -70,12 +71,9 @@ void readFile( char*fileName , Database*database ){
 
 int main( int argc , char**argv ){
 	Database*database = new Database();
-	std::cout << "Open File" << argv[1] << std::endl;
 	readFile( argv[1] , database );
-	std::cout << "Read finished" << std::endl;
 	database -> sort();
-	//database -> printList();
-	database -> checkSort();
+	database -> updateCTR();
 	std::string command;
 	std::cin >> command;
 	while( command != "quit" ){

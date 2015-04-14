@@ -23,6 +23,7 @@ public:
 	void printImpressed( uint userID1 , uint userID2 );
 	void printProfit( uint adID, double thita);
 	void sort();
+	void updateCTR();
 	void printList();
 	void checkSort();
 	struct AdProperty{
@@ -70,6 +71,7 @@ private:
 
 	class AdProperties{
 	public:
+		friend class Database;
 		AdProperties();
 		std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator
 		insert(
@@ -90,7 +92,7 @@ private:
 			uint impression = 0;
 			double CTR = -1;
 		};
-		std::unordered_map<uint,CTR> userCTRMap;
+		std::map<uint,CTR> userCTRMap;
 		std::set<AdProperty,AdPropertyCmp>propertySet;
 		//std::set<AdProperty*,AdPropertyPtrCmp>propertyPtrSet;
 	};	

@@ -398,18 +398,37 @@ void Database::printEntry( int i ){
 
 	
 void Database::genImpress( int n ){
+	std::set<uint>SET1;
+	std::set<uint>SET2;
+	while( n > 0 ){
+		int randNum1 = entryPtrs[ rand() % (nEntry - 1) ] -> userID;
+		int randNum2 = entryPtrs[ rand() % (nEntry - 1) ] -> userID;
+		if( SET1.count( randNum1 ) == 0 ){
+			SET1.insert( randNum1 );				
+			n -= 1;
+		std::cout << "impressed "
+			  << randNum1  << " "
+			  << randNum2  << std::endl;
+
+		}
+	}
+
+
+
 	for( int i = 0 ; i < n ; ++i ){
 		std::cout << "impressed "
 			  << entryPtrs[ rand() % (nEntry - 1) ] -> userID << " "
-			  << entryPtrs[ rand() % (nEntry - 1) ] << std::endl;
+			  << entryPtrs[ rand() % (nEntry - 1) ] -> userID << std::endl;
 	}
 }
 
 void Database::genClicked( int n ){
 	std::unordered_set< int > SET;
 	while( n > 0 ){
+
 		int randNum = entryPtrs[ rand() % (nEntry - 1) ] -> userID;
-		if( SET.count( randNum ) == 1 ){
+		if( SET.count( randNum ) == 0 ){
+			SET.insert( randNum );				
 			std::cout << "clicked " << randNum << std::endl;
 			n -= 1;
 		}
@@ -433,7 +452,8 @@ void Database::genProfit( int n ){
 	std::set<int>SET;
 	while( n > 0 ){
 		int randNum = entryPtrs[ rand() % (nEntry - 1) ] -> adID;
-		if( SET.count( randNum ) == 1 ){
+		if( SET.count( randNum ) == 0 ){
+			SET.insert( randNum );				
 			std::cout << "profit "
 				  << randNum << " "
 				  << (double)(rand()%1000)/1000.0

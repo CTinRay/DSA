@@ -75,7 +75,10 @@ int main( int argc , char**argv ){
 	std::cout << "Read finished" << std::endl;
 	database -> sort();
 	//database -> printList();
+
+
 	database -> checkSort();
+	std::cout << "start" << std:: endl;
 	database -> genProfit( 1200 );
 	database -> genGet( 3600 );
 	database -> genClicked( 2400 );
