@@ -1,9 +1,0 @@
-#include <iostream>
-
-using namespace std;
-int main(){
-	int* bigDataCluster = new int[23000000];
-	cout << "finish" << endl;
-	cin >> bigDataCluster[ 0 ];
-	return 0;
-}

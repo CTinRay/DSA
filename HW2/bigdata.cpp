@@ -7,13 +7,15 @@
 			
 void readFile( char*fileName , Database*database ){	
 	std::fstream bigDataFS;
+	std::fstream::sync_with_stdio(false);
 	bigDataFS.open( fileName , std::fstream::in );
 	if( !bigDataFS.is_open() ){
 		std::cout << "Open file error!!" << std::endl;
 		return;
 	}
-	std::cout << "Start Reading" << std::endl;
-	uint click;
+	
+	//std::cout << "Start Reading" << std::endl;
+	ushort click;
 	uint impression;
 	ulli displayURL;
 	uint adID;
@@ -25,7 +27,7 @@ void readFile( char*fileName , Database*database ){
 	uint title;
 	uint description;
 	uint userID;
-	int n = 0;
+	int n = 1;
 	int m = 0;
 	while( bigDataFS.peek() != EOF ){
 		bigDataFS >> click
@@ -41,19 +43,23 @@ void readFile( char*fileName , Database*database ){
 			  >> description
 			  >> userID;
 		if( n == 1000000 ){
-			std::cout << "Read:" << m*1000000 << "\t"
-				// << click << "\t" 
-				//<< impression << "\t"
-				// << displayURL << "\t"
-				//<< adID << "\t"
-				  << std::endl;
-			
+			//			std::cout << "Read:" << m*10000 << "\t"				
+				/*				  << click << "\t" 
+				  << impression << "\t"
+				  << displayURL << "\t"
+				  << adID << "\t"
+				  << userID << "\t"*/
+			//	  << std::endl;
+			if( bigDataFS.eof() ){
+				std::cout << "EOF" ;
+				break;
+			}
 			n = 0;
 			m += 1;
 		}
 		n++;
 
-		database -> insert( click, impression, displayURL, adID, advertiserID, depth, position, queryID,
+		database -> insert( click, impression, displayURL, adID, advertiserID, (std::uint8_t&)depth, (std::uint8_t&)position, queryID,
 				    keyword, title, description, userID);
 
 
@@ -65,9 +71,9 @@ void readFile( char*fileName , Database*database ){
 
 int main( int argc , char**argv ){
 	Database*database = new Database();
-	std::cout << "Open File" << argv[1] << std::endl;
 	readFile( argv[1] , database );
-	std::cout << "Read finished" << std::endl;
+	database -> sort();
+	database -> updateCTR();
 	std::string command;
 	std::cin >> command;
 	while( command != "quit" ){

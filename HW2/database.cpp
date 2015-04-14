@@ -1,180 +1,415 @@
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <string>
-#include <set>
+#include <algorithm>
 #include "database.h"
+#include <cstdlib>
 #include <unordered_map>
+#include <set>
 
 Database::Database(){
-	//	userList = new User[NUser];
-	std::cout << "sizeof user:" << sizeof( User ) << std::endl;
-	std::cout << "sizeof u_map:" << sizeof( std::unordered_map< uint ,uint > ) << std::endl;
+	//adPropertyPoolPtr = adPropertyPool;
+}
+
+void Database::insert(ushort&click,
+		      uint&impression ,
+		      ulli&displayURL ,
+		      uint&adID ,
+		      uint&advertiserID ,
+		      std::uint8_t&depth ,
+		      std::uint8_t&position ,
+		      uint&queryID,
+		      uint&keywordID,
+		      uint&titleID,
+		      uint&descriptionID,
+		      uint&userID){
+	DataEntry*entryPtr = &dataEntries[ nEntry ];
+	entryPtrs[ nEntry++ ] = entryPtr;
+	entryPtr->userID=userID;
+	entryPtr->adID = adID;
+	entryPtr->queryID = queryID;
+	entryPtr->click = click;
+	entryPtr->impression = impression;
+	entryPtr->pairDepthPosition =( (depth << 2) + position);       
+	entryPtr -> ptrProperty = &(*adPropertyMap[adID].insert( displayURL,
+								 userID, advertiserID,
+								 keywordID,
+								 titleID,
+								 descriptionID,
+								 click,
+								 impression ));
+	//std::cout << (uint) entry.pairDepthPosition << std::endl;
+	//std::cout << nEntry << ":" << (int)depth << "," << (int)position << std::endl;       
+
+	/*
+	adPropertyPoolPtr -> displayURL = displayURL;
+	adPropertyPoolPtr -> advertiserID = advertiserID;
+	adPropertyPoolPtr -> keywordID = keywordID;
+	adPropertyPoolPtr -> titleID = titleID;
+	adPropertyPoolPtr -> descriptionID = descriptionID;
+	entryPtr -> ptrProperty = adPropertyMap[ adID ].insert( adPropertyPoolPtr );
+	if( entryPtr -> ptrProperty == adPropertyPoolPtr ){
+		adPropertyPoolPtr += 1;
+		}*/	              
 	
-	adPropertyMap.rehash( 641710 );
+};
 
-}
-
-Database::~Database(){
-	delete [] userList;
-}
-
-//Insert record to database
-void Database::insert(uint click, uint impress , ulli displayURL , uint adID , uint advertiserID , ushort depth , ushort position ,
-		      uint queryID, uint keyword, uint title, uint description, uint userID){
-	//userList[ userID ].addRecord( adID, queryID, position , depth , click , impress );
-	//adPropertyMap[ adID ].insert( displayURL , advertiserID , keyword , title , description);
+std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator
+Database::AdProperties::insert(ulli displayURL,
+			       uint userID,uint advertiserID,
+			       uint keywordID,
+			       uint titleID,
+			       uint descriptionID,
+			       ushort click,
+			       uint impression){
 	
+	//CTR&ctr = userCTRMap[ userID ];
+	//ctr.click += click;
+	//ctr.impression += impression;
+	return propertySet.insert( {displayURL,
+				advertiserID,
+				keywordID,
+				titleID,
+				descriptionID
+				} ).first;
+	
+				};
+/*
+Database::AdProperty*Database::AdProperties::insert( Database::AdProperty*adPropertyPtr ){
+	auto pair = propertyPtrSet.insert( adPropertyPtr );
+	if( pair.second ){ return adPropertyPtr; };
+	return *(pair.first);
 }
+*/
+/*
+bool operator<(const std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&a,
+	       const std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&b){
+	 if( a == b ){
+		 return false;
+	 }
+	 Database::AdPropertyCmp cmp;
+	 return cmp( *a , *b );
+ };
 
-//Implement the get function described in spec
-void Database::printGet( uint userID, uint adID , uint queryID , ushort position , ushort depth ){
-	userList[ userID ].print( adID, queryID, position, depth );
-}
 
-//Implement the clicked function described in spec
-void Database::printClicked( uint userID  ){
-	userList[ userID ].printClicked( );
-}
+bool operator>(std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&a,
+	       std::set<Database::AdProperty,Database::AdPropertyCmp>::iterator&b){
+	 if( a == b ){
+		 return false;
+	 }
+	 Database::AdPropertyCmp cmp;
+	 return cmp( *b , *a );
+};
+*/
 
-//Implement the impressed function described in spec
-void Database::printImpressed( uint userID1 , uint userID2 ){
-	User&user1 = userList[ userID1 ];
-	User&user2 = userList[ userID2 ];	       
-	auto adIDIt1 = user1.adMap.begin();
-	auto adIDIt2 = user2.adMap.begin();
-	for(; adIDIt1 != user1.adMap.end() ; ++adIDIt1 ){
-		while( adIDIt2 -> first <= adIDIt1 -> first ){
-			if( adIDIt2 -> first == adIDIt1 -> first ){
-				std::cout << ( adIDIt1 -> first ) << std::endl;
-				adPropertyMap[ adIDIt1 -> first ].printProperties();
-				break;
-			}
-			if( adIDIt2 == user2.adMap.end() ){
-				break;
-			}
-			++adIDIt2;
+
+int Database::getFirstMatchIndex(const DataEntry& entry ){
+	int lowerBound = 0;
+	int upperBound = nEntry - 1;
+	while( upperBound - lowerBound 	> 0 ){
+		int mid = lowerBound + ((upperBound - lowerBound) >> 1);
+		//		std::cout << "low:" << lowerBound << "\tmid:" << mid << "\tup:" << upperBound << std::endl;
+		if( entryCmpA( dataEntries[ mid ] , entry)   ){
+			lowerBound = mid + 1;
+		}else{
+			upperBound = mid;
 		}
 	}
-
+		
+	return upperBound;
 }
+	
+
+int Database::getFirstMatchPtrIndex(const DataEntry* entry,int lowerBound = 0  ){
+	int upperBound = nEntry - 1;
+	while( upperBound - lowerBound 	> 0 ){
+		int mid = lowerBound + ((upperBound - lowerBound) >> 1);
+		//std::cout << "low:" << lowerBound << "\tmid:" << mid << "\tup:" << upperBound << std::endl;
+		if( entryPtrCmpA( entryPtrs[ mid ] , entry)   ){
+			lowerBound = mid + 1;
+		}else{
+			upperBound = mid;
+		}
+	}
+		
+	return upperBound;
+}
+
+
+void Database::printGet( uint userID, uint adID , uint queryID , ushort position , ushort depth ){
+	if( !ready ){
+		///		std::sort( dataEntries, dataEntries + nEntry , entryCmp );
+		ready = true;
+	}
+	DataEntry entry;
+	entry.userID = userID;
+	entry.adID = adID;
+	entry.queryID = queryID;
+	std::uint8_t pairDP = (depth << 2) + position;
+	entry.pairDepthPosition = pairDP;
+	int firstEntryIndex = getFirstMatchPtrIndex( &entry );
+	int click = 0;
+	int impression = 0;
+       	///std::cout << (int) pairDP << std::endl;
+	for( int i = firstEntryIndex ;
+	     i < nEntry -1 &&
+		     entryPtrs[i] -> userID == userID &&
+		     entryPtrs[i] -> adID == adID &&
+		     entryPtrs[i] -> queryID == queryID &&
+		     entryPtrs[i] -> pairDepthPosition == pairDP;
+	     ++i
+	     ){
+		click += entryPtrs[i] -> click;
+		impression += entryPtrs[i] -> impression;
+	}
+	std::cout << click << " " << impression << std::endl;
+}
+
+void Database::printClicked( uint userID  ){
+	if( !ready ){
+		//std::sort( dataEntries, dataEntries + nEntry , entryCmp );
+		ready = true;
+	}
+	DataEntry targetEntry;
+	targetEntry.userID = userID;
+	int index = getFirstMatchPtrIndex( &targetEntry );
+	//std::cout << index << std::endl;
+	while( index < nEntry -1 && entryPtrs[index] -> userID == userID ){
+		auto adID = entryPtrs[index] -> adID;
+		auto queryID = entryPtrs[index] -> queryID;
+		if( entryPtrs[ index ] -> click > 0 ){
+			std::cout << adID << " "
+				  << queryID << std::endl;
+			while( entryPtrs[index] -> userID == userID &&
+			       entryPtrs[index] -> adID == adID &&
+			       entryPtrs[index] -> queryID == queryID ){
+				index += 1;
+			}
+			
+		}else{
+			index += 1;
+		}
+	}
+}
+
+
+
+void Database::printImpressed( uint userID1 , uint userID2 ){
+	if( !ready ){
+		//std::sort( dataEntries, dataEntries + nEntry , entryCmp );
+		ready = true;
+	}
+	DataEntry targetEntry1;
+	targetEntry1.userID = userID1;
+	DataEntry targetEntry2;
+	targetEntry2.userID = userID2;
+	int index1 = getFirstMatchPtrIndex( &targetEntry1 );	
+	int index2 = getFirstMatchPtrIndex( &targetEntry2 );
+	//Debug Info
+	//std::cout << "index1:" << index1 << std::endl;
+	//printEntry( index1 );
+	//std::cout << "index2:" << index2 << std::endl;
+	//printEntry( index2 );
+	//End Info
+	while( index1 < nEntry -1 && index2 < nEntry -1&&
+	       entryPtrs[index1] -> userID == userID1 &&
+	       entryPtrs[index2] -> userID == userID2 
+	       ){
+
+		if( entryPtrs[index1] -> adID < entryPtrs[index2] -> adID ){
+			index1 += 1;
+		}else if( entryPtrs[index1] -> adID > entryPtrs[index2] -> adID ){
+			index2 += 1;
+		}else if( entryPtrs[index1] -> adID == entryPtrs[index2] -> adID ){
+			auto adID = entryPtrs[index1] -> adID;
+			std::cout << adID << std::endl;
+			std::set<AdProperty,AdPropertyCmp>uniq;
+			while( index1 < nEntry -1 &&
+			       entryPtrs[index1] -> userID == userID1 && entryPtrs[index1] -> adID == adID ){
+				uniq.insert( *(entryPtrs[index1] -> ptrProperty) );
+				++index1;
+			}
+			while(index2 < nEntry -1 &&
+			      entryPtrs[index2] -> userID == userID2 && entryPtrs[index2] -> adID == adID ){
+				uniq.insert( *(entryPtrs[index2] -> ptrProperty) );
+				++index2;
+			}
+			for( auto it = uniq.begin() ; it != uniq.end() ; ++it ){
+				printAdProperties( &(*it) );
+			}
+		}
+	}
+}
+
+void Database::printAdProperties( const AdProperty*ptrProperty){
+	std::cout << "\t"
+		  << ptrProperty -> displayURL << " "
+		  << ptrProperty -> advertiserID << " "
+		  << ptrProperty -> keywordID << " "
+		  << ptrProperty -> titleID << " "
+		  << ptrProperty -> descriptionID << std::endl;
+};
 
 void Database::printProfit(uint adID, double thita){
-	for( int i = 0 ; i < NUser ; ++i ){
-		if( userList[ i ].getCTR(adID) >= thita ){
-			std::cout << i << std::endl;
+	if( adPropertyMap.count( adID ) == 0 ){
+		return;
+	}
+	/*	int lowerBound = 0;
+	for( uint userID = 0 ; userID < NUser && lowerBound < nEntry - 1  ; ++userID ){
+		DataEntry entry;
+		entry.userID = userID;
+		entry.adID = adID;		
+		//std::cout << "lower bound:" << lowerBound << std::endl;
+		int index = getFirstMatchPtrIndex( &entry );// , lowerBound );
+		//std::cout << "firstMastch" << index << std::endl;
+		int impression = 0;
+		int clicked = 0;		
+		while( index < nEntry - 1&&
+		       entryPtrs[index] -> userID == userID &&
+		       entryPtrs[index] -> adID == adID 
+		       ){
+			impression += entryPtrs[index] -> impression;
+			clicked += entryPtrs[index] -> click;
+			index += 1;
+			//std::cout << index << std::endl;
 		}
+		//std::cout << index << std::endl;
+		if( impression > 0 && (double)clicked/(double)impression >= thita ){
+			std::cout << userID << std::endl;
+		}
+		lowerBound = index;
+	}*/
+	adPropertyMap[ adID ].printProfit( thita );
+}
+
+Database::AdProperties::AdProperties(){}
+
+void Database::updateCTR(){
+	for( int index = 0 ; index < nEntry-1 ;  ){
+		uint userID = entryPtrs[ index ] -> userID;
+		uint adID = entryPtrs[ index ] -> adID;
+		int click = 0 ;
+		int impress = 0;		
+		while( index < nEntry - 1 &&
+		       entryPtrs[ index ] -> userID == userID &&
+		       entryPtrs[ index ] -> adID == adID ){
+			click += entryPtrs[ index ] -> click;
+			impress += entryPtrs[ index ] -> impression;
+			index += 1;
+		}
+		adPropertyMap[ adID ].userCTRMap[ userID ].CTR = (double) click / (double) impress;
+
 	}
 }
+		       
 
-//Constrct function of Query
-Database::User::Query::Query(){
-}
-
-//Check if the query is clicked
-bool Database::User::Query::isClicked(){
-	return clicked;
-}
-
-//New query record
-void Database::User::Query::addRecord( ushort position , ushort depth , ushort click , uint impress ){
-	clicked = clicked == 1 || click == 1;
-	record[position - 1][depth - 1].click += click;
-	record[position - 1][depth - 1].impress += impress;
-}
-
-//get query record
-Database::ClickImpress Database::User::Query::getRecord( ushort position , ushort depth ){
-	return record[ position - 1 ][ depth - 1 ];
-}
-
-//Constructor of User
-Database::User::User(){
-}
-
-void Database::User::updateCTR(){
-	for( auto CTRit = adCTRMap.begin() ; CTRit != adCTRMap.end() ; ++CTRit ){
+void Database::AdProperties::printProfit( double thita ){	
+	for( auto CTRit = userCTRMap.begin() ; CTRit != userCTRMap.end() ; ++CTRit ){
 		CTR&ctr = CTRit -> second;
-		ctr.CTR = ctr.impress == 0 ? 0 : (double)ctr.click / (double)ctr.impress ;
-		/*		std::cout << "Ad:" << CTRit -> first
-			  << "\tImpress: " << ctr.impress
-			  << "\tClick:" << ctr.click
-			  << "\tCTR:" << ctr.CTR 
-			  << std::endl;*/
-	}
-}
-
-double Database::User::getCTR(uint adID){
-	if( adCTRMap.count( adID ) == 0 ){
-		return -1;
-	}
-	if( !CTRUpToDate ){
-		updateCTR();
-	}
-	return adCTRMap[adID].CTR;
-}
-	
-
-void Database::User::addRecord( uint adID, uint queryID, ushort position , ushort depth , ushort click , uint impress ){
-	adMap[ adID ][ queryID ].addRecord( position , depth , click , impress );
-	CTR&ctr = (adCTRMap[ adID ]);
-	ctr.impress += impress;
-	ctr.click += click;	
-	//	std::cout << "Impress: " << ctr.impress << "\tClick:" << ctr.click << std::endl;
-	
-}
-
-//Build for get function
-void Database::User::print( uint adID, uint queryID, uint position, uint depth ){
-	std::cout << adMap[ adID ][ queryID ].getRecord( position , depth ).click << "\t"
-		  << adMap[ adID ][ queryID ].getRecord( position , depth ).impress << std::endl;
-}
-
-//Build for click function
-void Database::User::printClicked(){
-	for( std::map<uint, std::map<uint,Query> >::iterator adIt = adMap.begin(); adIt != adMap.end() ; ++adIt ){
-		uint adID = adIt -> first;
-		std::map< uint , Query >&queryMap = adIt -> second;
-		for( std::map< uint , Query > :: iterator queryIt = queryMap.begin() ;
-		     queryIt != queryMap.end() ; ++queryIt ){
-			uint queryID = queryIt -> first;
-			Query&query = queryIt -> second;
-			if( query.isClicked() ){
-				std::cout << adID << "\t"
-					  << queryID << std::endl;
-			}
+		
+		if( ctr.CTR >= thita ){
+			std::cout << CTRit -> first << std::endl;
 		}
 	}
 }
 
-//Constructor of AdProperSet
-Database::AdProperties::AdProperties(){
+int Database::entryCmp( const void*p1, const void*p2){
+	DataEntry&a = *(DataEntry*)p1;
+	DataEntry&b = *(DataEntry*)p2;
+	if( entryCmpA( a , b ) ){
+		return -1;
+	}else{
+		return 1;
+	}		       
+};
 
+bool Database::entryPtrCmpA( const DataEntry*a , const DataEntry*b ){
+	return entryCmpA( *a, *b );
 }
 
+bool Database::entryCmpA( const DataEntry&a, const DataEntry&b){
+	if( a.userID < b.userID ) return true;	
+	if( a.userID > b.userID ) return false;	
+	if( a.adID < b.adID ) return true;
+	if( a.adID > b.adID ) return false;
+	if( a.queryID < b.queryID ) return true;
+	if( a.queryID > b.queryID ) return false;
+	if( a.pairDepthPosition < b.pairDepthPosition ) return true;
+	if( a.pairDepthPosition > b.pairDepthPosition ) return false;
+	//if( a.click < b.click ) return true;
+	//if( a.click > b.click ) return false;
+	//if( a.impression < b.impression ) return true;
+	//if( a.impression > b.impression ) return false;
+	//if( a.ptrProperty < b.ptrProperty ) return true;
+	//if( a.ptrProperty > b.ptrProperty ) return false;
+	return false;
+};
 
-void Database::AdProperties::insert(ulli URL , ushort adverID , uint keyword , uint title , uint description){
-	Property property = {
-		URL,
-		adverID,
-		keyword,
-		title,
-		description
-	};
-	propertySet.insert(property);
+
+bool Database::entryEqual( const DataEntry&a, const DataEntry&b){
+	if( a.userID != b.userID ) return false;	
+	if( a.adID != b.adID ) return false;
+	if( a.queryID != b.queryID ) return false;
+	if( a.pairDepthPosition != b.pairDepthPosition ) return false;
+	//if( a.click != b.click ) return false;
+	//if( a.impression != b.impression ) return false;
+	//if( a.ptrProperty != b.ptrProperty ) return false;
+	return true;
+};
+
+
+
+void Database::sort(){
+	//std::cout << "start sorting" << std::endl;
+	//std::cout << "nEntry:" << nEntry << std::endl;
+	std::sort( entryPtrs , entryPtrs + nEntry - 1 , entryPtrCmpA );
+	//printList();
+	//std::sort( dataEntries, dataEntries + nEntry - 1 , entryCmpA );
+	//qsort(dataEntries,nEntry-1,sizeof(DataEntry), Database::entryCmp);
+	//std::cout << "end sorting" << std::endl;
+	ready = true;
 }
 
-						 
-
-//Print the properties of the ad with the id
-void Database::AdProperties::printProperties(){
-	for( auto it = propertySet.begin(); it != propertySet.end(); ++ it ){
-		std::cout << "\t"
-			  << it -> URL << "\t"
-			  << it -> adverID << "\t"
-			  << it -> keyword << "\t"
-			  << it -> title << "\t"
-			  << it -> description << "\t"
-			  << std::endl;
+void Database::printList(){
+	for( int i = 0 ; i < nEntry ; ++i ){
+		std::cout << i << ":"
+			  << entryPtrs[i] -> userID << "\t"
+			  << entryPtrs[i] -> adID << "\t"
+			  << entryPtrs[i] -> queryID << "\t"
+			  << (int) entryPtrs[i] -> pairDepthPosition << "\t"
+			  << entryPtrs[i] -> click << "\t"
+			  << entryPtrs[i] -> impression << "\t"
+			  << entryPtrs[i] -> ptrProperty << std::endl;
 	}
+	//	std::cout << "CMP12:" << entryCmp( (void*) &dataEntries[1] , (void*) &dataEntries[2] ) << std::endl;
+	checkSort();
 }
+
+void Database::checkSort(){
+		for( int i = 0 ; i < nEntry -1 ; ++i ){
+		if( !entryCmpA(dataEntries[i],dataEntries[i+1])
+		    && !entryEqual( dataEntries[i] , dataEntries[i+1]) ){
+			/*std::cout << "Sort Err at :  " << i << std::endl;
+			std::cout << "nEntry" << nEntry << std::endl;
+			return;*/
+		}
+		}
+	std::cout << "checkSort End!!" << std::endl;
+}
+	
+	
+			
+void Database::printEntry( int i ){
+	std::cout << entryPtrs[i] -> userID << "\t"
+			  << entryPtrs[i] -> adID << "\t"
+			  << entryPtrs[i] -> queryID << "\t"
+			  << (int) entryPtrs[i] -> pairDepthPosition << "\t"
+			  << entryPtrs[i] -> click << "\t"
+			  << entryPtrs[i] -> impression << "\t"
+			  << entryPtrs[i] -> ptrProperty << std::endl;
+}
+
+
+	
+
+	

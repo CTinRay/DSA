@@ -1,2 +1,0 @@
-g++ --std=c++11 -Wall -g3 -O3 -o bigdata database.cpp bigdata.cpp 
-Makefile:2: recipe for target 'bigdata' failed
