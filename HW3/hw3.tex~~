@@ -1,0 +1,152 @@
+\documentclass[fleqn,a4paper]{article}
+
+\title{DSA Homework \#3}
+\date{}
+\setcounter{section}{3}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[ margin=1in,top=1in, head=1in]{geometry}
+\usepackage[encapsulated]{CJK}
+
+\lstset{
+  mathescape,         
+  literate={ai}{${a_i}$}{2}
+}
+
+
+\begin{document}
+\maketitle
+
+
+\subsection{Asymptotic Complexity}
+
+\begin{enumerate}
+\item
+  Let\ $p(n)=a n^2 + b n + c $\\
+  Then
+  \begin{align*}
+    &\log (p(n))\\
+    &=\ \log( a n^2 + b n + c ) \\
+    &\leq \ \log( a n^2 + b n  n + c  n^2 )\ ( for n\ \geq\ 1)\\
+    &= \log( ( a + b + c ) n^2 )\\
+    &= \log(a + b + c) + 2\log n\\ 
+    &\leq \log n + 2\log n ( for\ n \geq a + b + c )\\
+    &= 3\log n
+  \end{align*}
+  That is for $n \geq a+b+c $
+  \begin{align*}
+    &\log (p(n)) \leq 3\log n
+  \end{align*}
+  Thus,\ $\log p(n)$\ is\ $O(g(\log n))$\\
+
+\item
+  \begin{align*}
+    &\lceil f(n) \rceil < f(n) + 1 \\
+    &\because f(n)\ >\ 1 \\
+    &\therefore f(n) + 1 < f(n) + f(n) \\
+    &\therefore \lceil f(n) \rceil  < 2 f(n) \\
+  \end{align*}
+  Thus, $\lceil f(n) \rceil$ is $O(f(n))$\\
+
+\item
+  From the definition of limit, for any $\varepsilon > 0$ there is a $N$ such that $\forall n>N $,\\
+  \[ |\frac{f(n)}{g(n)} - A|  < \varepsilon \]
+  \[ \Rightarrow A - \varepsilon <  \frac{f(n)}{g(n)} < A + \varepsilon \] 
+  \[ \Rightarrow  g(n) (A - \varepsilon) < f(n) < g(n) (A + \varepsilon) \] 
+  That is, for any constants $c_1=A - \varepsilon$ and $c_2=A + \varepsilon$ there is a $N$ such that\\
+  $ c_1g(n) < f(n) < c_2g(n) $ (\ for\ $n>N$) \\
+  Thus, $f(n)=\Theta (g(n))$\\
+
+\item
+  \[ 40n_0^{\ 2}\leq 2n_0^{\ 3} \]
+  \[ n_0 \geq 20 \]
+
+\item
+  \begin{enumerate}
+  \item
+    \begin{lstlisting}
+      sum = 0;
+      for( i = 0 ; i < n ; ++i ){
+      power = 1;
+      for( t = 0 ; t < i ; ++t ){
+      power = power * x;
+    }
+      sum = sum + ai ;
+    }
+      return sum;
+    \end{lstlisting}    
+  \item
+  \end{enumerate}
+  $ O(n) $
+\item
+  
+  Consider $f(n)=n^3$ and $g(n)=n$,\\
+  $\log (f(n)) < 4 \log (g(n))$ for all $n>0$\\
+  $\therefore \log (f(n)) = O(\log g(n))$\\
+  However, $f(n) > g(n)$ for all $n>1$\\
+  $\therefore f(n) \neq O(g(n))$\\
+
+\end{enumerate}
+
+\subsection{Stack, Queue, Deque}
+\begin{enumerate}
+\item
+  \begin{itemize}
+  \item 
+    \textbf{Step1: }Pop an element from the stack and push it back to the queue $n$ times.
+  \item
+    \textbf{Step2: }Pop an element from the front of the queue and push it back both to the stack
+  \item
+    \textbf{Step3: }Pop an element from the stack and push it back to the queue $n$ times.
+  \item
+    \textbf{step4: }Pop an element from the front of the queue and push it back both to the stack and to the queue $n$ times. 
+  \item
+    \textbf{step5: }Repeat popping an element from the front of the queue until the queue is empty or the poped element is equal to $x$. If any element is equal to $x$, return true; otherwise, return false.
+  \end{itemize}
+
+\item
+  \begin{itemize}
+  \item 
+    \textbf{Step1: }Repeat popping an element from the stack \textit{S} and push it to the front of the dequeue until \textit{S} is empty.
+  \item
+    \textbf{Step2: }Repeat popping an element from the stack \textit{T} and push it to the front of the dequeue until \textit{T} is empty.
+  \item
+    \textbf{Step3: }Repeat popping an element from the front of the queue and push it back to the stack \textit{S} until the queue is eempty.
+  \end{itemize}
+  
+\item
+\item
+  \begin{itemize}
+    \item
+      \textbf{Step1: }Repeat popping an element from stake \textit{S} and push it into the third stake until stake \textit{S} is empty.
+      \textbf{Step2: }Repeat popping an element from stake \textit{T} and push in into the third stake until stake \textit{T} is wmpty.
+      \textbf{Step3: }Repeat pop each element in the third stake and push into stake \textit{S}.
+
+\end{enumerate}
+
+\subsection{List, Iterator}
+\begin{enumerate}
+\item
+  Each time the vector resize, its capacity becomes $\frac {5}{4}$ of its original capacity.\\
+  Let $t=$ times a vector of a capacity $n$ needs to resize.\\
+  \[ \frac {(\frac {5}{4})^t-1}{\frac {5}{4}-1} = n\]
+  Each time the vector resize, it has to copy all the element in the original array.\\
+  So the sum of times it copy is:\\
+  \[ \sum_{i=1}^{t}(\frac {5}{4})^{n-1} \]
+  \[ = \frac {(\frac{5}{4})^t - 1}{\frac{5}{4} - 1}\]
+  \[ = n \]
+  Therefore, the time complexity is $O(n)$.
+
+\item
+  \begin{itemize}
+  \item
+    \textbf{Algorithm: }Swap the \textbf{randomInteger(i)}-th with the i-th element for $i=n-1$ to $i=0$.
+  \item
+    \textbf{Explain: }The concept of that algorithm is to pick up an element from a array randomly and push it into another array for ``number of elememts'' times. Because the total number of the elements is constant, the other array storing the result can simply be keeped in the end of the original array. As each time choosing a element in the original array, every elements has equal probility to be chosen. From the senior high school math, we know that each element has the same probility to be the i-th chosen element, for all i greater than 0 and not greater than the number of elements. Therefore, every possible ordering of the result arry that store the picked elements is equally likely. 
+  \item
+    \textbf{Running time: }The algorithm picks and swap elements for ``number of elememts'' times. Thus the running time is $O(n)$.
+  \end{itemize}
+  \end{enumerate}
+
+\end{document}

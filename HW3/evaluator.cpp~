@@ -1,0 +1,273 @@
+#include "evaluator"
+#include <sstream>
+using namespace evaluate;
+
+template<typename T>
+Evaluator<T>::Evaluator(){
+
+	binOpMap["*"].precedence = 5;
+	binOpMap["*"].print = true;
+	binOpMap["*"].evaluate = [](std::stack<T>&nums){ 
+	        T first = nums.top(); nums.pop();
+	        T second = nums.top(); nums.pop();
+		nums.push(first * second);
+	};
+
+	binOpMap["/"].precedence = 5;
+	binOpMap["/"].print = true;
+	binOpMap["/"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		auto second = nums.top(); nums.pop();
+		nums.push(first / second);
+	};
+				
+	binOpMap["%"].precedence = 5;
+	binOpMap["%"].print = true;
+	binOpMap["%"].evaluate = [](std::stack<T>&nums){ 
+	        T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+		nums.push(first % second);
+	};
+		
+	binOpMap["+"].precedence = 6;
+	binOpMap["+"].print = true;
+	binOpMap["+"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push( first + second );
+	};
+
+	binOpMap["-"].precedence = 6;
+	binOpMap["-"].print = true;
+	binOpMap["-"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+		nums.push(first + second);
+	};
+
+	binOpMap[">>"].precedence = 7;
+	binOpMap[">>"].print = true;
+	binOpMap[">>"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push(first >> second);
+	};
+
+	binOpMap["<<"].precedence = 7;
+	binOpMap["<<"].print = true;
+	binOpMap["<<"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+		nums.push(first << second);
+	};
+
+
+	binOpMap["&"].precedence = 10;
+	binOpMap["&"].print = true;
+	binOpMap["&"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push(first & second);
+	};
+
+	binOpMap["^"].precedence = 11;
+	binOpMap["^"].print = true;
+	binOpMap["^"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+		nums.push(first ^ second);
+	};
+
+	binOpMap["|"].precedence = 12;
+	binOpMap["|"].print = true;
+	binOpMap["|"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push(first | second);
+	};
+
+	binOpMap["&&"].precedence = 13;
+	binOpMap["&&"].print = true;
+	binOpMap["&&"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push(first && second);
+	};
+
+	binOpMap["||"].precedence = 14;
+	binOpMap["||"].print = true;
+	binOpMap["||"].evaluate = [](std::stack<T>&nums){ 
+		T first = nums.top(); nums.pop();
+		T second = nums.top(); nums.pop();
+	        nums.push(first || second);
+	};
+	
+	binOpMap[","].precedence = 2;
+	binOpMap[","].print = false;
+	binOpMap[","].evaluate = [](std::stack<T>&nums){ 
+	};
+
+	unrOpMap[")"].precedence = 2;
+	unrOpMap[")"].print = true;
+	unrOpMap[")"].evaluate = [](std::stack<T>&nums){
+	};
+
+	unrOpMap["("].precedence = 2;
+	unrOpMap["("].print = false;
+	unrOpMap["("].evaluate = [](std::stack<T>&nums){
+	};
+
+
+	unrOpMap["+"].precedence = 3;
+	unrOpMap["+"].print = true;
+	unrOpMap["+"].evaluate = [](std::stack<T>&nums){
+		T first = nums.top(); nums.pop();
+		nums.push( + first );
+	};
+
+	unrOpMap["-"].precedence = 3;
+	unrOpMap["-"].print = true;
+	unrOpMap["-"].evaluate = [](std::stack<T>&nums){
+		T first = nums.top(); nums.pop();
+		nums.push( - first );
+	};
+
+	unrOpMap["!"].precedence = 3;
+	unrOpMap["!"].print = true;
+	unrOpMap["!"].evaluate = [](std::stack<T>&nums){
+		T first = nums.top(); nums.pop();
+		nums.push( ! first );
+	};
+
+};
+
+
+
+template<typename T>
+Evaluator::evaluate(std::string expression){
+	std::vector<string>tockens;
+	std::vector<T>nums;//Emulate stack with vector ;
+	std::vector<OpIterator>operates;//Emulate stack with vector
+	std::string postfix;
+	bool expectBinOp = false;
+
+	tockenize( expression, tockens);
+
+	for( int i = 0 ; i < tockens.length() ; ++i ){
+		OpIterator opIterator;
+		if( isdigit( tocken[i] ) ){			
+			nums.push_back( toNum( tockens[ i ] ) );
+			postfix.append( tocken[i] );
+			expectBinOp = true;
+		}
+		else{
+			if( expectBinOp ){
+				if( opIterator = binOpMap.find( tockens[ i ] ) == binOpMap.end() ){
+					std::cout << "error: unexpected tocken: " << tockens[ i ] << ", at " << i << std::end
+						  << "expect binary operator" << std::end << std::endl;
+					return;
+				}			
+				expectBinOp = false;
+			}
+			else{
+				if( opIterator = unrOpMap.find( tockens[ i ] ) == unrOpMap.end() &&
+				    opIterator = funcMap.find( tockens[ i ] ) == funcMap.end() ){
+					std::cout << "error: unexpected tocken: " << tockens[ i ] << ", at " << i << std::end
+						  << "expect binary operator" << std::end << std::endl;
+					return;
+				}			
+				expectBinOp = false;
+				operates.push_back( opIterator );
+			}
+			calculate( nums, operates, opIterator -> second . precedence, postfix );
+		}
+	}
+	calculate( nums, operates, -1, postfix );
+
+	//output postfix
+	std::cout << "Postfix Exp: " << postfix << std::endl;
+	
+	return nums.top();
+}
+
+
+template<typename T>
+void Evaluator::calculate( std::vector<T>&nums, std::vector<OpIterator>&opIterators, int precedence, std::string&postfix ){
+	while( opIterators.top() -> second . precedence <= precedence ){
+		if( opIterators.top() -> second . print ){
+			postfix.append( opIterators.top() -> first );
+		}
+		opIterators.top() -> second . evaluate( nums );
+		opIterators.pop();
+	}
+}
+
+template<typename T>
+Evaluator::tockenize(const std::string str,std::vector<string>&tockens)const{
+	int strLength = str.length();
+	for( int i = 0 ; i < strLength ; ++i ){
+		int start = i;
+		int&end = i;
+		if( isalpha( str[ start ] ) ){
+			while( isalpha( str[ end ] ) && end < strLength ){
+				end += 1;
+			}
+			tockens.push_back( str.substr( start , end - start ) );
+		}
+		else if( isdigit( str[ start ] ) ){
+			while( isdigit( str[ end ] ) && end < strLength ){
+				end += 1;
+			}
+			tockens.push_back( str.substr( start , end - start ) );
+		}
+		else{
+			std::string buffer;
+			buffer.push_back( str[ end ] );
+			while( !unrOpMap.count( buffer ) &&
+			       !binOpMap.count( buffer ) ){
+				buffer.push_back( str[ ++end ] );				
+			}
+			while( unrOpMap.count( buffer ) ||
+			       binOpMap.count( buffer ) ){
+				buffer.push_back( str[ ++end ] );
+			}
+			tockens.push_back( str.substr( start , end - start ) );			
+		}
+	}
+}
+
+template<typename T>
+std::ostream& Evaluator::operator << (std::ostream &out, const OpIterator&a){
+	if( a -> second.print ){
+		out << a -> first << std::endl;
+	}
+	return out;
+}
+
+template<typename T>
+std::ostream& Evaluator::operator << (std::ostream &out, const OpIterator&a){
+	if( a -> second.print ){
+		out << a -> first << std::endl;
+	}
+	return out;
+}
+
+
+
+template<typename T>
+template<typename C>
+std::ostream& Evaluator::operator << (std::ostream &out, const vecotr<C>&vec){
+	for( int i = 0 ; i < vec.size() - 1 ; ++i ){
+		std::cout << vec[i] << ", ";
+	}
+	std::cout << vec[ vec.size() - 1 ] << std::endl;
+}
+
+
+template<typename T>
+typename T Evaluator::toNum( std::string str ){
+	std::stringstream ss( str );
+        T num;
+	ss >> num;
+	return num;
+}

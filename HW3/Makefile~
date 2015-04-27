@@ -1,0 +1,8 @@
+CPPFLAGS = -O2 -std=c++11 -Wall
+main:
+
+calculator:evaluator evaluator.cpp calculator.cpp
+	g++ $(CPPFLAGS) evaluator.cpp calculator.cpp -o calculator
+debug:evaluator evaluator.cpp calculator.cpp
+	g++ -std=c++11 -Wall -O3 -g3 evaluator.cpp calculator.cpp -o calculator
+	gdb -q ./calculator	
