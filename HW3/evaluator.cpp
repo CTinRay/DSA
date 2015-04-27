@@ -20,7 +20,7 @@ Evaluator<T>::Evaluator(){
 	binOpMap["/"].evaluate = [](std::vector<T>&nums){ 
 		T first = nums.back(); nums.pop_back();
 	        T second = nums.back(); nums.pop_back();
-		nums.push_back(first / second);
+		nums.push_back(second / first);
 	};
 				
 	binOpMap["%"].precedence = 5;
@@ -155,7 +155,7 @@ T Evaluator<T>::evaluate(std::string expression){
 	tockenize( expression, tockens);
 
 	//!!DEBUG
-	//std::cout << "tockenize:" << tockens << std::endl;
+	std::cout << "tockens:" << tockens << std::endl;
 	for( int i = 0 ; i < tockens.size() ; ++i ){
 		// typename  std::map<std::string,Evaluator<T>::Operate>::iterator opIterator;
 		if( tockens[i] == "(" ){
@@ -183,6 +183,8 @@ T Evaluator<T>::evaluate(std::string expression){
 				}	
 				operate = binOpMap.at( tockens[ i ] );
 				expectBinOp = false;
+				operate.precedence += precedenceOffset;
+				calculate( nums, operates , operate.precedence , postfix );			
 			}
 			else{
 				if( unrOpMap.count( tockens[ i ] ) == 0 &&
@@ -193,12 +195,12 @@ T Evaluator<T>::evaluate(std::string expression){
 				}			
 				operate = unrOpMap.count( tockens[ i ] ) ? unrOpMap.at( tockens[i] ) : funcMap.at( tockens[i] ) ;
 				expectBinOp = false;
+				operate.precedence += precedenceOffset;
 			}
-			operate.precedence += precedenceOffset;
-			calculate( nums, operates , operate.precedence , postfix );
 			operates.push_back( operate );			
 
 		}
+		std::cout << "Processing tocken " << i  << std::endl;
 		std::cout << "Generated postfix: " << postfix << std::endl;
 		std::cout << "Operator stack: " ;
 		printOperates( operates );
