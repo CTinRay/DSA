@@ -1,8 +1,12 @@
 #include <sstream>
 #include <iostream>
 #include "evaluator.hpp"
+#include <math.h>
+#include <string>
+#include <iomanip> 
 //using namespace evaluate;
 typedef long long int lli;
+typedef int Int;
 #define MaxPrecedence 20
 template<typename T>
 Evaluator<T>::Evaluator(){
@@ -104,8 +108,8 @@ Evaluator<T>::Evaluator(){
 	        nums.push_back(first || second);
 	};
 	
-	binOpMap[","].precedence = 2;
-	binOpMap[","].face = " ,";
+	binOpMap[","].precedence = MaxPrecedence - 1;
+	binOpMap[","].face = "";
 	binOpMap[","].evaluate = [](std::vector<T>&nums){ 
 	};
 
@@ -134,12 +138,75 @@ Evaluator<T>::Evaluator(){
 		nums.push_back( - first );
 	};
 
+
 	unrOpMap["!"].precedence = 3;
 	unrOpMap["!"].face = " !";
 	unrOpMap["!"].evaluate = [](std::vector<T>&nums){
 		T first = nums.back(); nums.pop_back();
 		nums.push_back( ! first );
 	};
+
+
+	unrOpMap["~"].precedence = 3;
+	unrOpMap["~"].face = " ~";
+	unrOpMap["~"].evaluate = [](std::vector<T>&nums){
+		Int first = nums.back(); nums.pop_back();
+		nums.push_back( ~ first );
+	};
+
+
+	funcMap["sin"].precedence = 1;
+        funcMap["sin"].face = " sin";
+        funcMap["sin"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( sin( first ) );
+	};
+
+	funcMap["cos"].precedence = 1;
+        funcMap["cos"].face = " cos";
+        funcMap["cos"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( cos( first ) );
+	};
+
+	funcMap["exp"].precedence = 1;
+        funcMap["exp"].face = " exp";
+        funcMap["exp"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( exp( first ) );
+	};
+
+
+	funcMap["log"].precedence = 1;
+        funcMap["log"].face = " log";
+        funcMap["log"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( log( first ) );
+	};
+
+	funcMap["pow"].precedence = 0;
+        funcMap["pow"].face = " pow";
+        funcMap["pow"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		T second = nums.back(); nums.pop_back();
+		nums.push_back( pow( second, first ) );
+	};
+
+	funcMap["sqrt"].precedence = 1;
+        funcMap["sqrt"].face = " sqrt";
+        funcMap["sqrt"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( sqrt( first ) );
+	};
+
+	funcMap["fabs"].precedence = 1;
+        funcMap["fabs"].face = " fabs";
+        funcMap["fabs"].evaluate = [](std::vector<T>&nums){
+		T first = nums.back(); nums.pop_back();
+		nums.push_back( fabs( first ) );
+	};
+
+
 }
 
 
@@ -169,8 +236,16 @@ T Evaluator<T>::evaluate(std::string expression){
 			continue;
 		}
 		else if( isNum( tockens[i] ) ){			
-			nums.push_back( toNum( tockens[ i ] ) );
+			T num = toNum( tockens[ i ] );
+			nums.push_back( num );
+			#ifdef _INTEGER
 			postfix.append( " " + tockens[i] );
+			#endif
+
+			#ifdef _SCIENTIFIC
+			postfix.append( " " + toStr( num ) );
+			#endif
+
 			expectBinOp = true;
 		}
 		else{
@@ -209,7 +284,7 @@ T Evaluator<T>::evaluate(std::string expression){
 	}
 	calculate( nums, operates, 2147483647 , postfix );
 	//output postfix
-	std::cout << "Postfix Exp: " << postfix << std::endl;
+	std::cout << "Postfix Exp:" << postfix << std::endl;
 	
 	
 	return nums[0];
@@ -244,8 +319,8 @@ void Evaluator<T>::tockenize(const std::string str,std::vector<std::string>&tock
 			}
 			tockens.push_back( str.substr( start , end - start ) );
 		}
-		else if( isdigit( (char)str[ start ] ) ){
-			while( isdigit( str[ end ] ) && end < strLength ){
+		else if( isdigit( (char)str[ start ] ) || str[ start ] == '.' ){
+			while( end < strLength && ( isdigit( str[ end ] ) || str[ end ] == '.' )  ){
 				end += 1;
 			}
 
@@ -297,8 +372,16 @@ T Evaluator<T>::toNum( std::string str ){
 
 
 template<typename T>
+std::string Evaluator<T>::toStr( T num ){
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision( 6 ) << num;
+	return ss.str();
+}
+
+
+template<typename T>
 bool Evaluator<T>::isNum( std::string str ){
-	if( isdigit( str[0] ) ) return true;
+	if( isdigit( str[0] ) || str[0] == '.' ) return true;
 	return false;
 }
 

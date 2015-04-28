@@ -26,6 +26,7 @@ private:
 	void tockenize(const std::string, std::vector<std::string>&)const;
 	bool isNum( std::string );
 	NumberType toNum( std::string );
+	std::string toStr( NumberType);
 	void calculate( std::vector<NumberType>&, std::vector<Operate>&, int, std::string& );					       
 	//friend std::ostream& operator << (std::ostream&, const Operate&);
 	void printOperates(std::vector<Operate>&);
