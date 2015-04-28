@@ -21,7 +21,7 @@
 \setmainfont{FreeSans}
 \setmathsfont(Digits,Latin,Greek)[Numbers={Lining,Proportional}]{FreeSerif}
 \newfontfamily\ZhFont{文泉驛微米黑}
-
+\newfontfamily\SmallFont[Scale=0.8]{FreeSans}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
 \pagestyle{fancy}
@@ -33,7 +33,8 @@
 
 \lstset{
   mathescape,         
-  literate={ai}{${a_i}$}{2}
+  literate={ai}{${a_i}$}{2},
+  basicstyle=\SmallFont
 }
 
 
@@ -85,22 +86,23 @@
   \[ n_0 \geq 20 \]
 
 \item
-  \begin{enumerate}
-  \item
-    \begin{lstlisting}
-      sum = 0;
-      for( i = 0 ; i < n ; ++i ){
-        power = 1;
-        for( t = 0 ; t < i ; ++t ){
-          power = power * x;
-        }
-        sum = sum + ai ;
-      }
-      return sum;
-    \end{lstlisting}    
-  \item
-  \end{enumerate}
-  $ O(n) $
+  %\begin{enumerate}
+  % \item
+  %   \begin{lstlisting}
+  %     sum = 0;
+  %     for( i = 0 ; i < n ; ++i ){
+  %       power = 1;
+  %       for( t = 0 ; t < i ; ++t ){
+  %         power = power * x;
+  %       }
+  %       sum = sum + ai ;
+  %     }
+  %     return sum;
+  %   \end{lstlisting}    
+  %\item
+    $ O(n) $
+  %\end{enumerate}
+
 \item
   
   Consider $f(n)=n^3$ and $g(n)=n$,\\
@@ -138,6 +140,67 @@
   \end{itemize}
   
 \item
+  \begin{lstlisting}
+    stack stack_front;
+    stack stack_back;
+
+    function push_front( var element ){
+      stack_front.push( element );
+    }
+
+    function push_back( var element ){
+      stack_back.push( element );
+    }
+
+    function pop_front(){
+      if( stack_front.empty() ){
+        while( !stack_back.empty() ){
+          stack_front.push( stack_back.top() );
+          stack_back.pop();
+        }
+      }
+      if( !stack_front.empty() ){
+        stack_front.pop();
+      }
+    }
+
+    function pop_back(){
+      if( stack_end.empty() ){
+        while( !stack_front.empty() ){
+          stack_back.push( stack_front.top() );
+          stack_front.pop();
+        }
+      }
+      if( !stack_back.empty() ){
+        stack_back.pop();
+      }
+    }
+
+    function front(){
+      if( stack_fron.empty() ){
+        while( !stack_back.empty() ){
+          stack_front.push( stack_back.top() );
+          stack_back.pop();
+        }
+      }
+      return stack_front.top();
+    }
+
+
+    function back(){
+      if( stack_back.empty() ){
+        while( !stack_front.empty() ){
+          stack_back.push( stack_front.top() );
+          stack_front.pop();
+        }
+      }
+      return stack_back.top();
+    }
+
+  \end{lstlisting}
+
+
+
 \item
   \begin{itemize}
     \item
@@ -172,5 +235,192 @@
     \textbf{Running time: }The algorithm picks and swap elements for ``number of elememts'' times. Thus the running time is $O(n)$.
   \end{itemize}
   \end{enumerate}
+\subsection{Calculator}
+\begin{enumerate}
+  \item
+    \begin{enumerate}
+    \item
+      \begin{lstlisting}        
+  2 * ( 3 + 4 )            
+  Processing token: 0
+  Generated postfix:  2
+  Operator stack: 
+  =====================
+  Processing token: 1
+  Generated postfix:  2
+  Operator stack:  *
+  =====================
+  Processing token: 3
+  Generated postfix:  2 3
+  Operator stack:  *
+  =====================
+  Processing token: 4
+  Generated postfix:  2 3
+  Operator stack:  * +
+  =====================
+  Processing token: 5
+  Generated postfix:  2 3 4
+  Operator stack:  * +
+  =====================
+  Postfix Exp: 2 3 4 + *
+  RESULT: 14
+      \end{lstlisting}
 
+    \item       
+      \begin{lstlisting}
+  1 +-+- - - 1      
+  Processing token: 0
+  Generated postfix:  1
+  Operator stack: 
+  =====================
+  Processing token: 1
+  Generated postfix:  1
+  Operator stack:  +
+  =====================
+  Processing token: 2
+  Generated postfix:  1
+  Operator stack:  + -
+  =====================
+  Processing token: 3
+  Generated postfix:  1
+  Operator stack:  + - +
+  =====================
+  Processing token: 4
+  Generated postfix:  1
+  Operator stack:  + - + -
+  =====================
+  Processing token: 5
+  Generated postfix:  1
+  Operator stack:  + - + - -
+  =====================
+  Processing token: 6
+  Generated postfix:  1
+  Operator stack:  + - + - - -
+  =====================
+  Processing token: 7
+  Generated postfix:  1 1
+  Operator stack:  + - + - - -
+  =====================
+  Postfix Exp: 1 1 - - - + - +
+  RESULT: 2
+      \end{lstlisting}  
+
+    \item
+      \begin{lstlisting}
+  6 ^ 7 + 9 ~ 3
+  Processing token: 0
+  Generated postfix:  6
+  Operator stack: 
+  =====================
+  Processing token: 1
+  Generated postfix:  6
+  Operator stack:  ^
+  =====================
+  Processing token: 2
+  Generated postfix:  6 7
+  Operator stack:  ^
+  =====================
+  Processing token: 3
+  Generated postfix:  6 7
+  Operator stack:  ^ +
+  =====================
+  Processing token: 4
+  Generated postfix:  6 7 9
+  Operator stack:  ^ +
+  =====================
+  error: unexpected token: ~, at 5
+  expect bunary operator
+  RESULT: -1
+      \end{lstlisting}
+   \end{enumerate}
+
+   \item
+     \begin{enumerate}
+     \item
+       \begin{lstlisting}
+  Generated postfix: 
+  Operator stack:  -
+  =====================
+  Processing token: 2
+  Generated postfix: 
+  Operator stack:  - fabs
+  =====================
+  Processing token: 4
+  Generated postfix: 
+  Operator stack:  - fabs sin
+  =====================
+  Processing token: 6
+  Generated postfix:  5.500000
+  Operator stack:  - fabs sin
+  =====================
+  Processing token: 7
+  Generated postfix:  5.500000
+  Operator stack:  - fabs sin *
+  =====================
+  Processing token: 8
+  Generated postfix:  5.500000 3.141592
+  Operator stack:  - fabs sin *
+  =====================
+  Postfix Exp: 5.500000 3.141592 * sin fabs -
+  RESULT: -1.000000
+       \end{lstlisting}
+
+     \item
+       \begin{lstlisting}
+  pow( 5 , exp( log(2) ) )
+  Processing token: 0
+  Generated postfix: 
+  Operator stack:  pow
+  =====================
+  Processing token: 2
+  Generated postfix:  5.000000
+  Operator stack:  pow
+  =====================
+  Processing token: 3
+  Generated postfix:  5.000000
+  Operator stack:  pow
+  =====================
+  Processing token: 4
+  Generated postfix:  5.000000
+  Operator stack:  pow exp
+  =====================
+  Processing token: 6
+  Generated postfix:  5.000000
+  Operator stack:  pow exp log
+  =====================
+  Processing token: 8
+  Generated postfix:  5.000000 2.000000
+  Operator stack:  pow exp log
+  =====================
+  Postfix Exp: 5.000000 2.000000 log exp pow
+  RESULT: 25.000000
+  
+      \end{lstlisting}
+
+    \item
+      \begin{lstlisting}
+  exp( sqrt( sin( 0 ) ) )
+  Processing token: 0
+  Generated postfix: 
+  Operator stack:  exp
+  =====================
+  Processing token: 2
+  Generated postfix: 
+  Operator stack:  exp sqrt
+  =====================
+  Processing token: 4
+  Generated postfix: 
+  Operator stack:  exp sqrt sin
+  =====================
+  Processing token: 6
+  Generated postfix:  0.000000
+  Operator stack:  exp sqrt sin
+  =====================
+  Postfix Exp: 0.000000 sin sqrt exp
+  RESULT: 1.000000
+      \end{lstlisting}
+      
+    \end{enumerate}
+\end{enumerate}
+ 
 \end{document}

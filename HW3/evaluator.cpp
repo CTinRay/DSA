@@ -222,7 +222,7 @@ T Evaluator<T>::evaluate(std::string expression){
 	tockenize( expression, tockens);
 
 	//!!DEBUG
-	std::cout << "tockens:" << tockens << std::endl;
+	//std::cout << "tockens:" << tockens << std::endl;
 	for( int i = 0 ; i < tockens.size() ; ++i ){
 		// typename  std::map<std::string,Evaluator<T>::Operate>::iterator opIterator;
 		if( tockens[i] == "(" ){
@@ -275,7 +275,7 @@ T Evaluator<T>::evaluate(std::string expression){
 			operates.push_back( operate );			
 
 		}
-		std::cout << "Processing tocken " << i  << std::endl;
+		std::cout << "Processing token: " << i  << std::endl;
 		std::cout << "Generated postfix: " << postfix << std::endl;
 		std::cout << "Operator stack: " ;
 		printOperates( operates );
