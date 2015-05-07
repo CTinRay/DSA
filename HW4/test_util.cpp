@@ -16,6 +16,21 @@ void printVec( std::vector<Example*>vec ){
 	}
 }
 
+int printOrder(std::map<Attr,std::vector<Example*> >orderByAttr){
+	for( auto itMap = orderByAttr.begin() ;
+	     itMap != orderByAttr.end(); ++ itMap ){
+		Attr attr = itMap -> first ;
+		std:: cout << "attr:" << attr << std::endl;
+		auto vec = itMap -> second;
+		for( unsigned int i = 0 ; i < vec.size() ; ++ i ){
+			std::cout << vec[ i ] -> decision << ":" << vec[ i ] -> attrs[ attr ]  << std::endl;
+		}
+		std::cout << std::endl;
+	}
+	return 0;
+}
+
+
 #define INDENT "   "
 void printTree( Node*node, std::string indent = "" ){	
 	if( node -> decision == 0 ){

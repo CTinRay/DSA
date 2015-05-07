@@ -1,8 +1,10 @@
 #include <iostream>
 #include <array>
-
+#include <vector>
+#include <map>
 int main(){
-	int k;
-	std::cin >> k ;
-	std::array<int,k>arr;
+	std::map<int,std::vector<int>>m;
+	std::cout << m.begin() -> second.size() << std::endl;
+
+
 }

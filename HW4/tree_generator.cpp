@@ -22,26 +22,41 @@ double calculateTotalConfusion( uint y1, uint n1, uint y2, uint n2 ){
 	return ( sum1 / sum ) * calculateConfusion( y1 , n1 ) + ( sum2 / sum ) * calculateConfusion( y2 , n2 ); 
 }
 
-	
-
 #define YES 1
 #define NO -1
+
+Node*makeLeave(int nYes, int nNo){
+	Node*leave = new Node;
+	leave -> decision = nYes > nNo ? YES : NO;
+	return leave;	
+}
+
 #define NEGATIVE_INF -2
 Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double epsilon){
+	#ifdef _DEBUG
+	static int counter = 0;
+	counter ++ ;
+	#endif
 	//count Yes and No
 	uint nYes = 0, nNo = 0;
-	for( auto it = orderByAttr.begin() -> second.begin() ; 
-	     it != orderByAttr.begin() -> second.end() ; ++ it ){
-		if( (*it) -> decision == YES ){
+	// for( auto it = orderByAttr.begin() -> second.begin() ; 
+	//      it != orderByAttr.begin() -> second.end() ; ++ it ){
+	// 	if( (*it) -> decision == YES ){
+	// 		nYes += 1;
+	// 	}else{
+	// 		nNo += 1;
+	// 	}
+	// }
+	for( uint i = 0 ; i < orderByAttr.begin() -> second.size() ; ++ i ){
+		if( orderByAttr.begin() -> second[i] -> decision == YES ){
 			nYes += 1;
 		}else{
 			nNo += 1;
 		}
 	}
+	//check epsilon
 	if( calculateConfusion( nYes , nNo ) <= epsilon ){
-		Node*leave = new Node;
-		leave -> decision = nYes > nNo ? YES : NO;
-		return leave;
+		return makeLeave( nYes , nNo );
 	}
 	//Find best threshold
 	double minConfusion = 1;
@@ -61,7 +76,7 @@ Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double eps
 				nNoLeft += 1;
 			}
 			double confusion = calculateTotalConfusion( nYesRight, nNoRight, nYesLeft, nNoLeft );
-			if( confusion < minConfusion ){
+			if( confusion < minConfusion && order[i] -> attrs[attr] != order[i+1] -> attrs[attr] ){
 				minConfusion = confusion;
 				bestAttr = attr;
 				bestThreshold = ( order[i] -> attrs[attr] + order[i+1] -> attrs[attr] ) / 2;
@@ -69,31 +84,46 @@ Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double eps
 		}
 	}
 	
-	std::map<Attr,std::vector<Example*> >orderByAttrLeft;
-	std::map<Attr,std::vector<Example*> >orderByAttrRight;
+	if( bestThreshold == NEGATIVE_INF ){
+		return makeLeave( nYes, nNo );
+	}
+	
+	auto & orderByAttrLeft = *(new std::map<Attr,std::vector<Example*> >) ;
+        auto & orderByAttrRight = *(new std::map<Attr,std::vector<Example*> >);
 	for( auto itMap = orderByAttr.begin(); itMap != orderByAttr.end() ; ++itMap ){
 		Attr attr = itMap -> first;
-		for( auto itVec = itMap -> second.begin();
-		     itVec != itMap -> second.end();
-		     ++itVec ){
-			if( (*itVec) -> attrs[ bestAttr ] < bestThreshold ){
-				orderByAttrLeft[ attr ].push_back( (*itVec));
+		std::vector<Example*>&vecExamplePtrs = itMap -> second;
+#ifdef _DEBUG
+		// std::cout << "order by " << attr << " " << counter << std::endl;
+		// printVec( vecExamplePtrs ); 
+#endif
+		for( uint i = 0 ; i < vecExamplePtrs.size() ; ++ i  ){
+			// if( vecExamplePtrs[i] -> attrs.count( bestAttr ) == 0 ){
+			// 	continue;
+			// }
+			if( vecExamplePtrs[i] -> attrs[ bestAttr ] <= bestThreshold ){
+				orderByAttrLeft[ attr ].push_back( vecExamplePtrs[i] );
 			}else{
-				orderByAttrRight[ attr ].push_back( (*itVec) );
+				orderByAttrRight[ attr ].push_back( vecExamplePtrs[i] );
 			}
 		}
 	}
+	#ifdef _DEBUG
+	std::cout << "nY + nN " << nYes + nNo << std::endl;
+	#endif
 	Node*node = new Node;
 	node -> threshold = bestThreshold;
 	node -> attr = bestAttr;
 	node -> left = resolveTree( orderByAttrLeft ,epsilon );
+	delete &orderByAttrLeft;
 	node -> right = resolveTree( orderByAttrRight ,epsilon );
+	delete &orderByAttrRight;	
 	return node;
 }
 	
 
 Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double epsilon){
-	std::map<Attr,std::vector<Example*> >orderByAttr;
+	std::map<Attr,std::vector<Example*> >&orderByAttr = *(new std::map<Attr,std::vector<Example*> >) ;
 	for( auto setIt = attrSet.begin() ; setIt != attrSet.end(); ++setIt ){
 	        Attr attr = *setIt;
 		std::vector< Example* >&order = orderByAttr[attr];
@@ -102,12 +132,33 @@ Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double 
 				return a -> attrs[ attr ] < b -> attrs[ attr ];
 			} );	
 		#ifdef _DEBUG
-		std::cout << "Ordered by " << attr << std::endl;
-		printVec( order );
+		//std::cout << "Ordered by " << attr << std::endl;
+		//printVec( order );
 		#endif 
 	        orderByAttr[ attr ] = order;
 	}
-	return resolveTree( orderByAttr, epsilon );
+	Node*result = resolveTree( orderByAttr, epsilon );
+	delete &orderByAttr;
+	return result;
 }
 
 
+
+#define INDENT "   "
+void printTreeInC( Node*root ){	
+	std::cout << "int tree_predict(double *attr){" << std::endl;
+	printNodeInC( root , INDENT );
+	std::cout << "}" << std::endl;
+}
+
+void printNodeInC( Node*node , std::string indent ){
+	if( node -> decision == 0 ){		
+		std::cout << indent << "if( attr[ " << node -> attr << " ] <= " << node -> threshold << "){" << std::endl;
+		printNodeInC( node -> left , indent + INDENT );
+		std::cout << indent << "}else{" << std::endl;
+		printNodeInC( node -> right , indent + INDENT );
+		std::cout << indent << "}" << std::endl;
+	}else{
+		std::cout << indent << "return " << node -> decision << ";" << std::endl;
+	}
+}

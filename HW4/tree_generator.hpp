@@ -28,5 +28,6 @@ double calculateTotalConfusion( uint y1, uint n1, uint y2, uint n2 );
 void countYesAndNo( std::vector<Example*>*examples,uint&nYes,uint&nNo);
 Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double epsilon);	
 Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double epsilon);
-
+void printTreeInC( Node*node );
+void printNodeInC( Node*node, std::string indent );
 

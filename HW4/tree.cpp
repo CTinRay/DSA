@@ -47,12 +47,15 @@ int main(int argc, char**argv ){
 		
 	}
 	#ifdef _DEBUG
-	printVec( examples );
+	//printVec( examples );
 	#endif
 
 	Node*root = buildTree( examples ,attrSet, epsilon );
 	#ifdef _DEBUG
 	printTree( root , "   " );
 	#endif
+
+	printTreeInC( root );
+	
 	return 0;
 }
