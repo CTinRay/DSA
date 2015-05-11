@@ -10,7 +10,7 @@ void printVec( std::vector<Example*>vec ){
 		std::cout << (*itVec) -> decision << " ";
 		for( auto itMap = (*itVec) -> attrs . begin() ; 
 		     itMap != (*itVec) -> attrs . end(); ++itMap ){
-			std::cout << itMap -> first << ":" << itMap -> second << " " ; 
+			//std::cout << itMap -> first << ":" << itMap -> second << " " ; 
 		}
 		std::cout << std::endl;
 	}

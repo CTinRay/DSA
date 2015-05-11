@@ -5,6 +5,7 @@
 //#include "tree_generator.hpp"
 #include "test_util.hpp"
 #include <algorithm>
+#include <functional>
 typedef unsigned int uint;
 typedef double Threshold;
 typedef uint Attr;
@@ -114,10 +115,11 @@ Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double eps
 	Node*node = new Node;
 	node -> threshold = bestThreshold;
 	node -> attr = bestAttr;
+	delete &orderByAttr;
 	node -> left = resolveTree( orderByAttrLeft ,epsilon );
-	delete &orderByAttrLeft;
+	//delete &orderByAttrLeft;
 	node -> right = resolveTree( orderByAttrRight ,epsilon );
-	delete &orderByAttrRight;	
+	//delete &orderByAttrRight;	
 	return node;
 }
 	
@@ -138,7 +140,7 @@ Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double 
 	        orderByAttr[ attr ] = order;
 	}
 	Node*result = resolveTree( orderByAttr, epsilon );
-	delete &orderByAttr;
+	//delete &orderByAttr;
 	return result;
 }
 
@@ -147,18 +149,37 @@ Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double 
 #define INDENT "   "
 void printTreeInC( Node*root ){	
 	std::cout << "int tree_predict(double *attr){" << std::endl;
-	printNodeInC( root , INDENT );
+	printNodeInC( root , INDENT, [](int decision, std::string indent){
+			std::cout << indent << "return " << decision << ";" << std::endl; }
+		);
 	std::cout << "}" << std::endl;
 }
 
-void printNodeInC( Node*node , std::string indent ){
+void printForestInC( std::vector<Node*>&roots ){
+	std::cout << "int forest_predict(double *attr){" << std::endl
+		  << INDENT << "int vote = 0;" << std::endl;
+	
+	for( uint i = 0 ; i < roots.size() ; ++i ){
+		std::cout << "tree" << i << "_predict:" << std::endl;
+		printNodeInC( roots[i] , INDENT, [](int decision, std::string indent){
+				std::cout << indent << "vote +=" << decision << ";" << std::endl; }
+			);			
+	}
+	std::cout << INDENT << "return vote > 0 ? 1 : -1;" << std::endl
+		  << "}" << std::endl;
+	
+}
+
+void printNodeInC( Node*node , std::string indent, std::function<void (int, std::string)> ret ){
 	if( node -> decision == 0 ){		
 		std::cout << indent << "if( attr[ " << node -> attr << " ] <= " << node -> threshold << "){" << std::endl;
-		printNodeInC( node -> left , indent + INDENT );
+		printNodeInC( node -> left , indent + INDENT , ret);
 		std::cout << indent << "}else{" << std::endl;
-		printNodeInC( node -> right , indent + INDENT );
+		printNodeInC( node -> right , indent + INDENT , ret);
 		std::cout << indent << "}" << std::endl;
 	}else{
-		std::cout << indent << "return " << node -> decision << ";" << std::endl;
+		ret( node -> decision, indent );
+		//std::cout << indent << "return " << node -> decision << ";" << std::endl;
 	}
 }
+

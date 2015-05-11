@@ -1,10 +1,12 @@
-This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2015.4.24)  4 MAY 2015 10:57
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2015.4.24)  10 MAY 2015 10:29
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**\input hw4.tex
-(./hw4.tex (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+**hw4.tex
+(./hw4.tex
+LaTeX2e <2011/06/27>
+Babel <3.9h> and hyphenation patterns for 3 languages loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/fleqn.clo
 File: fleqn.clo 1998/08/17 v1.1c Standard LaTeX option (flush left equations)
@@ -1012,6 +1014,6 @@ Here is how much of TeX's memory you used:
  20212 multiletter control sequences out of 15000+600000
  11857 words of font info for 87 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 52i,14n,66p,10434b,353s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 52i,14n,66p,10427b,353s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on hw4.pdf (1 page).

@@ -1,8 +1,8 @@
 CC=g++
-FNAME=heart.train
-PNAME=heart.test
+FNAME=a1a.train
+PNAME=a1a.test
 EPSILON=0.05
-T=50
+T= 100
 RM=rm -rf
 CPPFLAGS = -O2 -std=c++11 -Wall 
 CPPFLAGS_DBG = -std=c++11 -Wall -g3 -D_DEBUG
@@ -14,7 +14,6 @@ tree_pred_func.cpp: tree $(FNAME)
 
 clean_tree_pred_func: 
 	$(RM) tree_pred_func.cpp
-                      
 forest_pred_func.cpp: forest $(FNAME)
 	./forest $(FNAME) $(T) > $@
 
@@ -38,4 +37,5 @@ clean:
 
 tree: ../tree.cpp ../tree_generator.hpp ../tree_generator.cpp
 	g++ $(CPPFLAGS) ../tree.cpp ../tree_generator.cpp -o ./tree
-
+forest: ../forest.cpp ../tree_generator.hpp ../tree_generator.cpp
+	g++ $(CPPFLAGS) ../forest.cpp ../tree_generator.cpp -o forest

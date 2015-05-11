@@ -2,7 +2,7 @@
 #include <map>
 #include <vector>
 #include <set>
-
+#include <functional>
 typedef unsigned int uint;
 typedef double Threshold;
 typedef uint Attr;
@@ -29,5 +29,5 @@ void countYesAndNo( std::vector<Example*>*examples,uint&nYes,uint&nNo);
 Node* resolveTree( std::map<Attr,std::vector<Example*> >&orderByAttr, double epsilon);	
 Node* buildTree(std::vector< Example* >&examples, std::set<Attr>attrSet, double epsilon);
 void printTreeInC( Node*node );
-void printNodeInC( Node*node, std::string indent );
-
+void printNodeInC( Node*node , std::string indent, std::function<void (int, std::string)> ret );
+void printForestInC( std::vector<Node*>&roots );
