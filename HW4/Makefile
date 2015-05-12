@@ -8,3 +8,5 @@ debugF: forest.cpp tree_generator.hpp tree_generator.cpp test_util.cpp
 	g++ $(CPPFLAGS_DBG) forest.cpp tree_generator.cpp test_util.cpp -o forest
 debug: tree.cpp tree_generator.hpp tree_generator.cpp test_util.cpp test_util.hpp
 	g++ $(CPPFLAGS_DBG) tree.cpp tree_generator.cpp test_util.cpp -o tree
+generateCircle: generateCircle.cpp
+	g++ $(CPPFLAGS) generateCircle.cpp -o genCircle

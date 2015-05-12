@@ -4,3 +4,4 @@
 void printVec( std::vector<Example*>vec );
 void printTree( Node*root , std::string indent );
 int printOrder(std::map<Attr,std::vector<Example*> >orderByAttr);
+void printGraph( Node*root , double, double, double, double);

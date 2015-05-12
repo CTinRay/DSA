@@ -14,6 +14,7 @@
 \usepackage{amssymb}
 
 \usepackage{qtree}
+\usepackage{forest}
 
 % \usepackage{fontspec}
 % \setmainfont{FreeSans}
@@ -23,7 +24,7 @@
 \setmainfont{FreeSans}
 \setmathsfont(Digits,Latin,Greek)[Numbers={Lining,Proportional}]{FreeSerif}
 \newfontfamily\ZhFont{文泉驛微米黑}
-\newfontfamily\SmallFont[Scale=0.7]{FreeSans}
+\newfontfamily\SmallFont[Scale=0.8]{Droid Sans}
 \newfontfamily\SmallSmallFont[Scale=0.7]{FreeSans}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
@@ -33,6 +34,11 @@
 \lhead{DSA Homework 4}
 \rfoot{\thepage / \pageref{LastPage}}
 
+\usepackage{tikz}
+\usepackage{arydshln}
+
+
+\usepackage{multicol}
 
 \begin{document}
 \maketitle
@@ -78,5 +84,823 @@
   Because in a postorder travelsal, the node $v$ is traveled before all its ascendant and after all its descendant. In a preorder travelsal, the node $v$ is traveled before all its descendant and after all its ascendant. Therefore, we can derive the formula:\\
   $post(v) = pre(v) - depth(v) + desc(v) + 1$ 
 
+\item
+    \begin{lstlisting}[
+      basicstyle=\linespread{0.8}\SmallFont,        
+      frame = single
+      ]
+      function printTree( Node*node , string indent ){
+        if( node -> isLeave() ){
+          printLine( indent + node -> value );
+        }else{
+          printLine( node -> value + "(" );
+          for( childNode in node ){
+              printTree( childNode , indent + "    " );
+          }
+          printLine( ")" );
+        }
+      }
+    \end{lstlisting}
+    \end{enumerate}
+
+  \subsection{Decision Tree}  
+  \begin{enumerate}
+\item
+  % \lstinputlisting[language=c++]{tree.cpp}
+  \begin{lstlisting}[
+    literate={vi}{${v_i}$,}{2} {vi+1}{${v_{i+1}}$}{4} {-}{-}{1}, 
+    % literate={vi+1}{${v_{i+1}}$}{4} , 
+    basicstyle=\linespread{0.8}\SmallFont,        
+    frame = single
+   ]
+ nYesRight = nTotalYes; nNoRight = nTotalYes;
+ nYesLeft = 0; nNo = 0;
+ double bestThreshold;
+ double minConfusion = 1;
+ for( i = 0 to m - 2 ){
+   //split those examples to left and right subsets
+   if( belongExampleDesision( vi ) == YES ){
+     nYesLeft += 1;
+     nYesRight -= 1;
+   }else{
+     nNoLeft += 1;
+     nNoRight -=1;
+   }
+   double confusion = calculateConfusion( nYesLeft, nNoLeft, nYesRight, nNoRight );
+   if( confusion < minConfusion ){
+     bestThreshold = (vi + vi+1) / 2
+   }
+ }
+\end{lstlisting}
+\item %2
+  \ 
+
+\item %3
+  The tree is composed with nodes. And each node contain two pointer to its child, the threshold, and the attribute the threshold belongs to. Also, in case the node is a leave, so the node also have a variable storing decision. \\
+\\
+    \begin{lstlisting}[frame = single, basicstyle=\linespread{0.8}\SmallFont]
+      struct Node{
+        //Meaningful only when node is not leave
+        Node*left;
+        Node*right;
+        Threshold threshold;
+        Attr attr;
+        //Meaningful only when node is leave
+        short decision = 0;
+      };
+    \end{lstlisting}
+  \begin{minipage}[t]{7cm} 
+    \Tree [.Node1 [.Node2 Node3 Node4 ] Node5 ]  
+  \end{minipage} 
+  \hfill
+  \begin{minipage}[t]{7cm} 
+    \begin{tabular}{ |l|l| }
+      \hline
+      0x1 & left = 0x6 \\ \hdashline
+      0x2 & right = 0x16 \\ \hdashline
+      0x3 & threshold = 3 \\ \hdashline
+      0x4 & attr = 3 \\ \hdashline
+      0x5 & decision = 0 \\ \hline
+
+      0x6 & left = 0xB \\ \hdashline
+      0x7 & right = 0x11 \\ \hdashline
+      0x8 & threshold = 2.7 \\ \hdashline
+      0x9 & attr = 2 \\ \hdashline
+      0xA & decision = 0 \\ \hline
+
+      0xB & left = NULL \\ \hdashline
+      0xC & right = NULL \\ \hdashline
+      0xD & threshold = 0 \\ \hdashline
+      0xF & attr = 0 \\ \hdashline
+      0x10 & decision = +1 \\ \hline
+
+      0x11 & left = NULL \\ \hdashline
+      0x12 & right = NULL \\ \hdashline
+      0x13 & threshold = 0 \\ \hdashline
+      0x14 & attr = 0 \\ \hdashline
+      0x15 & decision = -1 \\ \hline
+
+      0x16 & left = NULL \\ \hdashline
+      0x17 & right = NULL \\ \hdashline
+      0x18 & threshold = 0 \\ \hdashline
+      0x19 & attr = 0 \\ \hdashline
+      0x1A & decision = -1 \\ \hline
+    \end{tabular}    
+  \end{minipage} 
+  \item
+    \ \\
+    \begin{forest}
+    [Attr:1\\Threshold:63.5, for tree={parent anchor=south, child anchor=north, align=center, s sep=5mm}
+      [Decision: -1]
+      [Attr:3\\Threshold:20
+        [Decision: -1]
+        [Decision: +1]
+      ]       
+    ]     
+    \end{forest}
+
+\item
+  I teach my tree with the data set that whether or not the ponits from $(3,3)$ to $(-3,-3)$ is within the circle $x^2 + y^2 \leq 4$\\
+  \begin{minipage}[l]{5cm}
+    \begin{lstlisting}[
+      basicstyle=\linespread{0.8}\SmallFont,        
+      frame = single
+      ]
+-1 1:3 2:3
+-1 1:3 2:2
+-1 1:3 2:1
+-1 1:3 2:0
+-1 1:3 2:-1
+-1 1:3 2:-2
+-1 1:3 2:-3
+-1 1:2 2:3
+...
++1 1:0 2:1
++1 1:0 2:0
++1 1:0 2:-1
+...
+-1 1:-2 2:-3
+-1 1:-3 2:3
+-1 1:-3 2:2
+-1 1:-3 2:1
+-1 1:-3 2:0
+-1 1:-3 2:-1
+-1 1:-3 2:-2
+-1 1:-3 2:-3
+
+    \end{lstlisting}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{forest}
+    [Attr:1\\Threshold:-1.5, for tree={parent anchor=south, child anchor=north, align=center, s sep=5mm}
+      [Decision: -1]
+      [Attr:1\\Threshold:1.5
+        [Attr:2\\Threshold:-1.5
+          [Decision:-1]
+          [Attr:2\\Threshold:1.5
+            [Decision:1]
+            [Decision:-1]
+          ]
+        ]
+        [Decision:-1]
+      ]       
+    ]     
+    \end{forest}
+    
+  \end{minipage}
+  \begin{minipage}[r]{7cm}
+    The tree split those examples based on $x$ first, and it split the graph into 3 regions. And then, it split the center region into 3 regions based on $y$.
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+      \draw[thick,dashed] (0,0) circle (2);
+
+      \draw[very thick,gray] (-1.5,-3) -- (-1.5,+3);
+      \draw[very thick,gray] (+1.5,-3) -- (+1.5,+3);
+      \draw[very thick,gray] (-1.5,+1.5) -- (+1.5,+1.5);
+      \draw[very thick,gray] (-1.5,-1.5) -- (+1.5,-1.5);
+      \node [fill=white,inner sep=1pt] at (0,0) { \large true};
+    \end{tikzpicture}
+  \end{minipage}
+
+  My code genarete test data set:\\
+  \begin{lstlisting}[frame = single, basicstyle=\linespread{0.8}\SmallFont]
+#define RADIUS 2
+#define BOUND 3
+#define PRECISE 1.0
+int main(){
+	for( int i = BOUND * PRECISE ; i >= -BOUND * PRECISE ; --i ){
+		for( int j = BOUND * PRECISE ;
+                      j >= -BOUND * PRECISE ; --j ){
+			var x = i / PRECISE ;
+			var y = j / PRECISE ;
+			std::cout << (inCircle(x ,y ,RADIUS )?"+1":"-1")
+				  << " 1:" << x 
+				  << " 2:" << y << std::endl;
+		}
+	}
+}			
+  \end{lstlisting}
+
+\subsection{(Play for fun)}
+
+  \begin{minipage}[r]{7cm}
+    If I change the PRECISE in the test data generator program to 10.0, the graph becomes ->.\\
+    I guess if I increase BOUND, my tree will more like the circle.
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,dashed] (0,0) circle (2);
+      \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+
+     \draw[very thick,gray] (-1.45,-3) -- (-1.45,3);
+     \draw[very thick,gray] (-1.45,-0.25) -- (-1.35,-0.25);
+     \draw[very thick,gray] (-1.45,0.25) -- (-1.35,0.25);
+     \draw[very thick,gray] (1.25,-3) -- (1.25,3);
+     \draw[very thick,gray] (-1.35,-1.35) -- (1.25,-1.35);
+     \draw[very thick,gray] (-1.35,-1.45) -- (1.25,-1.45);
+     \draw[very thick,gray] (-0.25,-1.35) -- (-0.25,-1.45);
+     \draw[very thick,gray] (0.25,-1.35) -- (0.25,-1.45);
+     \draw[very thick,gray] (-1.35,1.25) -- (1.25,1.25);
+     \draw[very thick,gray] (-1.05,1.25) -- (-1.05,-1.35);
+     \draw[very thick,gray] (-1.35,-0.75) -- (-1.05,-0.75);
+     \draw[very thick,gray] (-1.35,-0.85) -- (-1.05,-0.85);
+     \draw[very thick,gray] (-1.15,-0.75) -- (-1.15,-0.85);
+     \draw[very thick,gray] (-1.35,0.75) -- (-1.05,0.75);
+     \draw[very thick,gray] (-1.25,0.75) -- (-1.25,-0.75);
+     \draw[very thick,gray] (-1.35,-0.55) -- (-1.25,-0.55);
+     \draw[very thick,gray] (-1.35,0.55) -- (-1.25,0.55);
+     \draw[very thick,gray] (-1.35,0.85) -- (-1.05,0.85);
+     \draw[very thick,gray] (-1.15,0.85) -- (-1.15,0.75);
+     \draw[very thick,gray] (-1.05,-1.05) -- (1.25,-1.05);
+     \draw[very thick,gray] (0.75,-1.05) -- (0.75,-1.35);
+     \draw[very thick,gray] (-0.75,-1.05) -- (-0.75,-1.35);
+     \draw[very thick,gray] (-0.85,-1.05) -- (-0.85,-1.35);
+     \draw[very thick,gray] (-0.85,-1.15) -- (-0.75,-1.15);
+     \draw[very thick,gray] (-0.75,-1.25) -- (0.75,-1.25);
+     \draw[very thick,gray] (-0.55,-1.25) -- (-0.55,-1.35);
+     \draw[very thick,gray] (0.55,-1.25) -- (0.55,-1.35);
+     \draw[very thick,gray] (0.85,-1.05) -- (0.85,-1.35);
+     \draw[very thick,gray] (0.75,-1.15) -- (0.85,-1.15);
+     \draw[very thick,gray] (1.05,1.25) -- (1.05,-1.05);
+     \draw[very thick,gray] (-1.05,1.05) -- (1.05,1.05);
+     \draw[very thick,gray] (-0.85,1.25) -- (-0.85,1.05);
+     \draw[very thick,gray] (0.75,1.25) -- (0.75,1.05);
+     \draw[very thick,gray] (-0.75,1.25) -- (-0.75,1.05);
+     \draw[very thick,gray] (-0.85,1.15) -- (-0.75,1.15);
+     \draw[very thick,gray] (0.85,1.25) -- (0.85,1.05);
+     \draw[very thick,gray] (0.75,1.15) -- (0.85,1.15);
+     \draw[very thick,gray] (1.05,0.85) -- (1.25,0.85);
+     \draw[very thick,gray] (1.05,-0.75) -- (1.25,-0.75);
+     \draw[very thick,gray] (1.05,-0.85) -- (1.25,-0.85);
+     \draw[very thick,gray] (1.15,-0.75) -- (1.15,-0.85);
+     \draw[very thick,gray] (1.05,0.75) -- (1.25,0.75);
+     \draw[very thick,gray] (1.15,0.85) -- (1.15,0.75);
+     \draw[very thick,gray] (-1.35,1.45) -- (1.25,1.45);
+     \draw[very thick,gray] (-0.55,1.45) -- (-0.55,1.25);
+     \draw[very thick,gray] (0.55,1.45) -- (0.55,1.25);
+     \draw[very thick,gray] (-0.55,1.35) -- (0.55,1.35);
+     \draw[very thick,gray] (-0.25,1.45) -- (-0.25,1.35);
+     \draw[very thick,gray] (0.25,1.45) -- (0.25,1.35);
+     \draw[very thick,gray] (1.45,-3) -- (1.45,3);
+     \draw[very thick,gray] (1.25,-0.55) -- (1.45,-0.55);
+     \draw[very thick,gray] (1.25,0.55) -- (1.45,0.55);
+     \draw[very thick,gray] (1.35,0.55) -- (1.35,-0.55);
+     \draw[very thick,gray] (1.35,-0.25) -- (1.45,-0.25);
+     \draw[very thick,gray] (1.35,0.25) -- (1.45,0.25);
+   \end{tikzpicture}
+  \end{minipage}
+
+
+  \begin{minipage}[r]{7cm}
+    However, when BOUND = 100, the way my tree split is still not like the circle.
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,dashed] (0,0) circle (2);
+      \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+
+    \draw[very thick,gray] (-1.45,-3) -- (-1.45,3);
+     \draw[very thick,gray] (1.25,-3) -- (1.25,3);
+     \draw[very thick,gray] (-1.45,-1.45) -- (1.25,-1.45);
+     \draw[very thick,gray] (-1.45,1.25) -- (1.25,1.25);
+     \draw[very thick,gray] (-1.05,1.25) -- (-1.05,-1.45);
+     \draw[very thick,gray] (-1.45,-0.75) -- (-1.05,-0.75);
+     \draw[very thick,gray] (-1.45,-0.85) -- (-1.05,-0.85);
+     \draw[very thick,gray] (-1.15,-0.75) -- (-1.15,-0.85);
+     \draw[very thick,gray] (-1.45,0.75) -- (-1.05,0.75);
+     \draw[very thick,gray] (-1.35,0.75) -- (-1.35,-0.75);
+     \draw[very thick,gray] (-1.45,-0.25) -- (-1.35,-0.25);
+     \draw[very thick,gray] (-1.45,0.25) -- (-1.35,0.25);
+     \draw[very thick,gray] (-1.25,0.75) -- (-1.25,-0.75);
+     \draw[very thick,gray] (-1.35,-0.55) -- (-1.25,-0.55);
+     \draw[very thick,gray] (-1.35,0.55) -- (-1.25,0.55);
+     \draw[very thick,gray] (-1.45,0.85) -- (-1.05,0.85);
+     \draw[very thick,gray] (-1.15,0.85) -- (-1.15,0.75);
+     \draw[very thick,gray] (-1.05,-1.15) -- (1.25,-1.15);
+     \draw[very thick,gray] (0.75,-1.15) -- (0.75,-1.45);
+     \draw[very thick,gray] (-0.55,-1.15) -- (-0.55,-1.45);
+     \draw[very thick,gray] (-1.05,-1.25) -- (-0.55,-1.25);
+     \draw[very thick,gray] (-0.75,-1.15) -- (-0.75,-1.25);
+     \draw[very thick,gray] (-0.55,-1.35) -- (0.75,-1.35);
+     \draw[very thick,gray] (0.25,-1.35) -- (0.25,-1.45);
+     \draw[very thick,gray] (-0.25,-1.35) -- (-0.25,-1.45);
+     \draw[very thick,gray] (0.55,-1.15) -- (0.55,-1.35);
+     \draw[very thick,gray] (0.55,-1.25) -- (0.75,-1.25);
+     \draw[very thick,gray] (1.05,1.25) -- (1.05,-1.15);
+     \draw[very thick,gray] (-1.05,1.05) -- (1.05,1.05);
+     \draw[very thick,gray] (-1.05,-1.05) -- (1.05,-1.05);
+     \draw[very thick,gray] (-0.85,-1.05) -- (-0.85,-1.15);
+     \draw[very thick,gray] (0.85,-1.05) -- (0.85,-1.15);
+     \draw[very thick,gray] (-0.85,1.25) -- (-0.85,1.05);
+     \draw[very thick,gray] (0.75,1.25) -- (0.75,1.05);
+     \draw[very thick,gray] (-0.75,1.25) -- (-0.75,1.05);
+     \draw[very thick,gray] (-0.85,1.15) -- (-0.75,1.15);
+     \draw[very thick,gray] (0.85,1.25) -- (0.85,1.05);
+     \draw[very thick,gray] (0.75,1.15) -- (0.85,1.15);
+     \draw[very thick,gray] (1.05,0.85) -- (1.25,0.85);
+     \draw[very thick,gray] (1.05,-0.75) -- (1.25,-0.75);
+     \draw[very thick,gray] (1.05,-0.85) -- (1.25,-0.85);
+     \draw[very thick,gray] (1.15,-0.75) -- (1.15,-0.85);
+     \draw[very thick,gray] (1.05,0.75) -- (1.25,0.75);
+     \draw[very thick,gray] (1.15,0.85) -- (1.15,0.75);
+     \draw[very thick,gray] (-1.45,1.45) -- (1.25,1.45);
+     \draw[very thick,gray] (-0.55,1.45) -- (-0.55,1.25);
+     \draw[very thick,gray] (0.55,1.45) -- (0.55,1.25);
+     \draw[very thick,gray] (-0.55,1.35) -- (0.55,1.35);
+     \draw[very thick,gray] (-0.25,1.45) -- (-0.25,1.35);
+     \draw[very thick,gray] (0.25,1.45) -- (0.25,1.35);
+     \draw[very thick,gray] (1.45,-3) -- (1.45,3);
+     \draw[very thick,gray] (1.25,-0.55) -- (1.45,-0.55);
+     \draw[very thick,gray] (1.25,0.55) -- (1.45,0.55);
+     \draw[very thick,gray] (1.35,0.55) -- (1.35,-0.55);
+     \draw[very thick,gray] (1.35,-0.25) -- (1.45,-0.25);
+     \draw[very thick,gray] (1.35,0.25) -- (1.45,0.25);
+
+   \end{tikzpicture}
+  \end{minipage}
+
+
+  \begin{minipage}[r]{7cm}
+    I try to reduce the BOUND to 2, with the same precision.
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,dashed] (0,0) circle (2);
+      \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+
+     \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+     \draw[very thick,gray] (-1.45,-3) -- (-1.45,3);
+     \draw[very thick,gray] (-1.45,-0.25) -- (-1.35,-0.25);
+     \draw[very thick,gray] (-1.45,0.25) -- (-1.35,0.25);
+     \draw[very thick,gray] (1.25,-3) -- (1.25,3);
+     \draw[very thick,gray] (-1.35,-1.35) -- (1.25,-1.35);
+     \draw[very thick,gray] (-1.35,-1.45) -- (1.25,-1.45);
+     \draw[very thick,gray] (-0.25,-1.35) -- (-0.25,-1.45);
+     \draw[very thick,gray] (0.25,-1.35) -- (0.25,-1.45);
+     \draw[very thick,gray] (-1.35,1.25) -- (1.25,1.25);
+     \draw[very thick,gray] (-1.05,1.25) -- (-1.05,-1.35);
+     \draw[very thick,gray] (-1.35,-0.75) -- (-1.05,-0.75);
+     \draw[very thick,gray] (-1.35,-0.85) -- (-1.05,-0.85);
+     \draw[very thick,gray] (-1.15,-0.75) -- (-1.15,-0.85);
+     \draw[very thick,gray] (-1.35,0.75) -- (-1.05,0.75);
+     \draw[very thick,gray] (-1.25,0.75) -- (-1.25,-0.75);
+     \draw[very thick,gray] (-1.35,-0.55) -- (-1.25,-0.55);
+     \draw[very thick,gray] (-1.35,0.55) -- (-1.25,0.55);
+     \draw[very thick,gray] (-1.35,0.85) -- (-1.05,0.85);
+     \draw[very thick,gray] (-1.15,0.85) -- (-1.15,0.75);
+     \draw[very thick,gray] (-1.05,-1.05) -- (1.25,-1.05);
+     \draw[very thick,gray] (0.75,-1.05) -- (0.75,-1.35);
+     \draw[very thick,gray] (-0.75,-1.05) -- (-0.75,-1.35);
+     \draw[very thick,gray] (-0.85,-1.05) -- (-0.85,-1.35);
+     \draw[very thick,gray] (-0.85,-1.15) -- (-0.75,-1.15);
+     \draw[very thick,gray] (-0.75,-1.25) -- (0.75,-1.25);
+     \draw[very thick,gray] (-0.55,-1.25) -- (-0.55,-1.35);
+     \draw[very thick,gray] (0.55,-1.25) -- (0.55,-1.35);
+     \draw[very thick,gray] (0.85,-1.05) -- (0.85,-1.35);
+     \draw[very thick,gray] (0.75,-1.15) -- (0.85,-1.15);
+     \draw[very thick,gray] (1.05,1.25) -- (1.05,-1.05);
+     \draw[very thick,gray] (-1.05,1.05) -- (1.05,1.05);
+     \draw[very thick,gray] (-0.85,1.25) -- (-0.85,1.05);
+     \draw[very thick,gray] (0.75,1.25) -- (0.75,1.05);
+     \draw[very thick,gray] (-0.75,1.25) -- (-0.75,1.05);
+     \draw[very thick,gray] (-0.85,1.15) -- (-0.75,1.15);
+     \draw[very thick,gray] (0.85,1.25) -- (0.85,1.05);
+     \draw[very thick,gray] (0.75,1.15) -- (0.85,1.15);
+     \draw[very thick,gray] (1.05,0.85) -- (1.25,0.85);
+     \draw[very thick,gray] (1.05,-0.75) -- (1.25,-0.75);
+     \draw[very thick,gray] (1.05,-0.85) -- (1.25,-0.85);
+     \draw[very thick,gray] (1.15,-0.75) -- (1.15,-0.85);
+     \draw[very thick,gray] (1.05,0.75) -- (1.25,0.75);
+     \draw[very thick,gray] (1.15,0.85) -- (1.15,0.75);
+     \draw[very thick,gray] (-1.35,1.45) -- (1.25,1.45);
+     \draw[very thick,gray] (-0.55,1.45) -- (-0.55,1.25);
+     \draw[very thick,gray] (0.55,1.45) -- (0.55,1.25);
+     \draw[very thick,gray] (-0.55,1.35) -- (0.55,1.35);
+     \draw[very thick,gray] (-0.25,1.45) -- (-0.25,1.35);
+     \draw[very thick,gray] (0.25,1.45) -- (0.25,1.35);
+     \draw[very thick,gray] (1.45,-3) -- (1.45,3);
+     \draw[very thick,gray] (1.25,-0.55) -- (1.45,-0.55);
+     \draw[very thick,gray] (1.25,0.55) -- (1.45,0.55);
+     \draw[very thick,gray] (1.35,0.55) -- (1.35,-0.55);
+     \draw[very thick,gray] (1.35,-0.25) -- (1.45,-0.25);
+     \draw[very thick,gray] (1.35,0.25) -- (1.45,0.25);
+
+   \end{tikzpicture}
+  \end{minipage}
+
+  \begin{minipage}[r]{7cm}
+    Do an experiment, reduce the BOUND to 1.5
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,dashed] (0,0) circle (2);
+      \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+
+     \draw[very thick,gray] (-1.25,-3) -- (-1.25,3);
+     \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+     \draw[very thick,gray] (-1.45,-3) -- (-1.45,3);
+     \draw[very thick,gray] (-1.45,-0.25) -- (-1.35,-0.25);
+     \draw[very thick,gray] (-1.45,0.25) -- (-1.35,0.25);
+     \draw[very thick,gray] (-1.35,-0.55) -- (-1.25,-0.55);
+     \draw[very thick,gray] (-1.35,0.55) -- (-1.25,0.55);
+     \draw[very thick,gray] (1.15,-3) -- (1.15,3);
+     \draw[very thick,gray] (-1.25,-1.25) -- (1.15,-1.25);
+     \draw[very thick,gray] (-1.25,-1.35) -- (1.15,-1.35);
+     \draw[very thick,gray] (-1.25,-1.45) -- (1.15,-1.45);
+     \draw[very thick,gray] (-0.25,-1.35) -- (-0.25,-1.45);
+     \draw[very thick,gray] (0.25,-1.35) -- (0.25,-1.45);
+     \draw[very thick,gray] (-0.55,-1.25) -- (-0.55,-1.35);
+     \draw[very thick,gray] (0.55,-1.25) -- (0.55,-1.35);
+     \draw[very thick,gray] (-1.25,1.25) -- (1.15,1.25);
+     \draw[very thick,gray] (-1.05,1.25) -- (-1.05,-1.25);
+     \draw[very thick,gray] (-1.25,-0.85) -- (-1.05,-0.85);
+     \draw[very thick,gray] (-1.25,0.75) -- (-1.05,0.75);
+     \draw[very thick,gray] (-1.25,-0.75) -- (-1.05,-0.75);
+     \draw[very thick,gray] (-1.15,-0.75) -- (-1.15,-0.85);
+     \draw[very thick,gray] (-1.25,0.85) -- (-1.05,0.85);
+     \draw[very thick,gray] (-1.15,0.85) -- (-1.15,0.75);
+     \draw[very thick,gray] (-1.05,-1.05) -- (1.15,-1.05);
+     \draw[very thick,gray] (0.85,-1.05) -- (0.85,-1.25);
+     \draw[very thick,gray] (-0.75,-1.05) -- (-0.75,-1.25);
+     \draw[very thick,gray] (-0.85,-1.05) -- (-0.85,-1.25);
+     \draw[very thick,gray] (-0.85,-1.15) -- (-0.75,-1.15);
+     \draw[very thick,gray] (0.75,-1.05) -- (0.75,-1.25);
+     \draw[very thick,gray] (0.75,-1.15) -- (0.85,-1.15);
+     \draw[very thick,gray] (-1.05,1.05) -- (1.15,1.05);
+     \draw[very thick,gray] (1.05,1.05) -- (1.05,-1.05);
+     \draw[very thick,gray] (1.05,-0.85) -- (1.15,-0.85);
+     \draw[very thick,gray] (1.05,0.85) -- (1.15,0.85);
+     \draw[very thick,gray] (0.85,1.25) -- (0.85,1.05);
+     \draw[very thick,gray] (-0.75,1.25) -- (-0.75,1.05);
+     \draw[very thick,gray] (-0.85,1.25) -- (-0.85,1.05);
+     \draw[very thick,gray] (-0.85,1.15) -- (-0.75,1.15);
+     \draw[very thick,gray] (0.75,1.25) -- (0.75,1.05);
+     \draw[very thick,gray] (0.75,1.15) -- (0.85,1.15);
+     \draw[very thick,gray] (-1.25,1.35) -- (1.15,1.35);
+     \draw[very thick,gray] (-0.55,1.35) -- (-0.55,1.25);
+     \draw[very thick,gray] (0.55,1.35) -- (0.55,1.25);
+     \draw[very thick,gray] (-1.25,1.45) -- (1.15,1.45);
+     \draw[very thick,gray] (-0.25,1.45) -- (-0.25,1.35);
+     \draw[very thick,gray] (0.25,1.45) -- (0.25,1.35);
+     \draw[very thick,gray] (1.35,-3) -- (1.35,3);
+     \draw[very thick,gray] (1.15,-0.75) -- (1.35,-0.75);
+     \draw[very thick,gray] (1.15,0.75) -- (1.35,0.75);
+     \draw[very thick,gray] (1.15,-0.55) -- (1.35,-0.55);
+     \draw[very thick,gray] (1.25,-0.55) -- (1.25,-0.75);
+     \draw[very thick,gray] (1.15,0.55) -- (1.35,0.55);
+     \draw[very thick,gray] (1.25,0.75) -- (1.25,0.55);
+     \draw[very thick,gray] (1.45,-3) -- (1.45,3);
+     \draw[very thick,gray] (1.35,-0.25) -- (1.45,-0.25);
+     \draw[very thick,gray] (1.35,0.25) -- (1.45,0.25);
+
+   \end{tikzpicture}
+  \end{minipage}
+
+
+  \begin{minipage}[r]{7cm}
+    Finally BOUND = 2, PRECISE = 50;
+  \end{minipage}
+  \hfill
+  \begin{minipage}[r]{7cm}
+    \begin{tikzpicture}
+      \draw [help lines] (-3,-3) grid (3,3);
+      \draw[thick,dashed] (0,0) circle (2);
+      \draw[very thick,gray] (-1.35,-3) -- (-1.35,3);
+      \draw[thick,->] (-3.5,0) -- (3.5,0);
+      \draw[thick,->] (0,-3.5) -- (0,3.5);
+
+     \draw[very thick,gray] (-1.33,-3) -- (-1.33,3);
+     \draw[very thick,gray] (-1.41,-3) -- (-1.41,3);
+     \draw[very thick,gray] (-1.41,-0.45) -- (-1.33,-0.45);
+     \draw[very thick,gray] (-1.41,0.39) -- (-1.33,0.39);
+     \draw[very thick,gray] (-1.41,-0.31) -- (-1.33,-0.31);
+     \draw[very thick,gray] (-1.37,-0.31) -- (-1.37,-0.45);
+     \draw[very thick,gray] (-1.37,-0.39) -- (-1.33,-0.39);
+     \draw[very thick,gray] (-1.35,-0.39) -- (-1.35,-0.45);
+     \draw[very thick,gray] (-1.39,0.39) -- (-1.39,-0.31);
+     \draw[very thick,gray] (-1.41,0.21) -- (-1.39,0.21);
+     \draw[very thick,gray] (-1.41,-0.21) -- (-1.39,-0.21);
+     \draw[very thick,gray] (-1.39,0.31) -- (-1.33,0.31);
+     \draw[very thick,gray] (-1.37,0.39) -- (-1.37,0.31);
+     \draw[very thick,gray] (-1.41,0.45) -- (-1.33,0.45);
+     \draw[very thick,gray] (-1.35,0.45) -- (-1.35,0.39);
+     \draw[very thick,gray] (1.27,-3) -- (1.27,3);
+     \draw[very thick,gray] (-1.33,-1.33) -- (1.27,-1.33);
+     \draw[very thick,gray] (-1.33,-1.41) -- (1.27,-1.41);
+     \draw[very thick,gray] (-0.45,-1.33) -- (-0.45,-1.41);
+     \draw[very thick,gray] (0.39,-1.33) -- (0.39,-1.41);
+     \draw[very thick,gray] (-0.31,-1.33) -- (-0.31,-1.41);
+     \draw[very thick,gray] (-0.45,-1.37) -- (-0.31,-1.37);
+     \draw[very thick,gray] (-0.39,-1.33) -- (-0.39,-1.37);
+     \draw[very thick,gray] (-0.45,-1.35) -- (-0.39,-1.35);
+     \draw[very thick,gray] (-0.31,-1.39) -- (0.39,-1.39);
+     \draw[very thick,gray] (0.21,-1.39) -- (0.21,-1.41);
+     \draw[very thick,gray] (-0.21,-1.39) -- (-0.21,-1.41);
+     \draw[very thick,gray] (0.31,-1.33) -- (0.31,-1.39);
+     \draw[very thick,gray] (0.31,-1.37) -- (0.39,-1.37);
+     \draw[very thick,gray] (0.45,-1.33) -- (0.45,-1.41);
+     \draw[very thick,gray] (0.39,-1.35) -- (0.45,-1.35);
+     \draw[very thick,gray] (-1.33,1.29) -- (1.27,1.29);
+     \draw[very thick,gray] (-1.01,1.29) -- (-1.01,-1.33);
+     \draw[very thick,gray] (-1.33,-0.83) -- (-1.01,-0.83);
+     \draw[very thick,gray] (-1.33,-0.93) -- (-1.01,-0.93);
+     \draw[very thick,gray] (-1.33,-0.97) -- (-1.01,-0.97);
+     \draw[very thick,gray] (-1.05,-0.93) -- (-1.05,-0.97);
+     \draw[very thick,gray] (-1.03,-0.93) -- (-1.03,-0.97);
+     \draw[very thick,gray] (-1.05,-0.95) -- (-1.03,-0.95);
+     \draw[very thick,gray] (-1.11,-0.83) -- (-1.11,-0.93);
+     \draw[very thick,gray] (-1.13,-0.83) -- (-1.13,-0.93);
+     \draw[very thick,gray] (-1.13,-0.87) -- (-1.11,-0.87);
+     \draw[very thick,gray] (-1.07,-0.83) -- (-1.07,-0.93);
+     \draw[very thick,gray] (-1.11,-0.89) -- (-1.07,-0.89);
+     \draw[very thick,gray] (-1.09,-0.89) -- (-1.09,-0.93);
+     \draw[very thick,gray] (-1.09,-0.91) -- (-1.07,-0.91);
+     \draw[very thick,gray] (-1.33,0.77) -- (-1.01,0.77);
+     \draw[very thick,gray] (-1.33,-0.65) -- (-1.01,-0.65);
+     \draw[very thick,gray] (-1.21,-0.65) -- (-1.21,-0.83);
+     \draw[very thick,gray] (-1.25,-0.65) -- (-1.25,-0.83);
+     \draw[very thick,gray] (-1.25,-0.71) -- (-1.21,-0.71);
+     \draw[very thick,gray] (-1.25,-0.69) -- (-1.21,-0.69);
+     \draw[very thick,gray] (-1.23,-0.69) -- (-1.23,-0.71);
+     \draw[very thick,gray] (-1.17,-0.65) -- (-1.17,-0.83);
+     \draw[very thick,gray] (-1.21,-0.75) -- (-1.17,-0.75);
+     \draw[very thick,gray] (-1.21,-0.77) -- (-1.17,-0.77);
+     \draw[very thick,gray] (-1.19,-0.75) -- (-1.19,-0.77);
+     \draw[very thick,gray] (-1.17,-0.81) -- (-1.01,-0.81);
+     \draw[very thick,gray] (-1.15,-0.81) -- (-1.15,-0.83);
+     \draw[very thick,gray] (-1.33,0.61) -- (-1.01,0.61);
+     \draw[very thick,gray] (-1.29,0.61) -- (-1.29,-0.65);
+     \draw[very thick,gray] (-1.33,-0.55) -- (-1.29,-0.55);
+     \draw[very thick,gray] (-1.33,0.51) -- (-1.29,0.51);
+     \draw[very thick,gray] (-1.33,-0.51) -- (-1.29,-0.51);
+     \draw[very thick,gray] (-1.31,-0.51) -- (-1.31,-0.55);
+     \draw[very thick,gray] (-1.33,0.55) -- (-1.29,0.55);
+     \draw[very thick,gray] (-1.31,0.55) -- (-1.31,0.51);
+     \draw[very thick,gray] (-1.29,-0.61) -- (-1.01,-0.61);
+     \draw[very thick,gray] (-1.27,-0.61) -- (-1.27,-0.65);
+     \draw[very thick,gray] (-1.23,0.77) -- (-1.23,0.61);
+     \draw[very thick,gray] (-1.27,0.77) -- (-1.27,0.61);
+     \draw[very thick,gray] (-1.27,0.69) -- (-1.23,0.69);
+     \draw[very thick,gray] (-1.25,0.69) -- (-1.25,0.61);
+     \draw[very thick,gray] (-1.27,0.65) -- (-1.25,0.65);
+     \draw[very thick,gray] (-1.21,0.77) -- (-1.21,0.61);
+     \draw[very thick,gray] (-1.23,0.71) -- (-1.21,0.71);
+     \draw[very thick,gray] (-1.19,0.77) -- (-1.19,0.61);
+     \draw[very thick,gray] (-1.21,0.75) -- (-1.19,0.75);
+     \draw[very thick,gray] (-1.33,0.91) -- (-1.01,0.91);
+     \draw[very thick,gray] (-1.13,0.91) -- (-1.13,0.77);
+     \draw[very thick,gray] (-1.17,0.91) -- (-1.17,0.77);
+     \draw[very thick,gray] (-1.17,0.83) -- (-1.13,0.83);
+     \draw[very thick,gray] (-1.17,0.81) -- (-1.13,0.81);
+     \draw[very thick,gray] (-1.15,0.83) -- (-1.15,0.81);
+     \draw[very thick,gray] (-1.13,0.87) -- (-1.01,0.87);
+     \draw[very thick,gray] (-1.09,0.91) -- (-1.09,0.87);
+     \draw[very thick,gray] (-1.11,0.91) -- (-1.11,0.87);
+     \draw[very thick,gray] (-1.11,0.89) -- (-1.09,0.89);
+     \draw[very thick,gray] (-1.33,0.95) -- (-1.01,0.95);
+     \draw[very thick,gray] (-1.07,0.95) -- (-1.07,0.91);
+     \draw[very thick,gray] (-1.05,0.95) -- (-1.05,0.91);
+     \draw[very thick,gray] (-1.07,0.93) -- (-1.05,0.93);
+     \draw[very thick,gray] (-1.33,0.97) -- (-1.01,0.97);
+     \draw[very thick,gray] (-1.03,0.97) -- (-1.03,0.95);
+     \draw[very thick,gray] (0.93,1.29) -- (0.93,-1.33);
+     \draw[very thick,gray] (-1.01,-1.17) -- (0.93,-1.17);
+     \draw[very thick,gray] (-0.69,-1.17) -- (-0.69,-1.33);
+     \draw[very thick,gray] (-0.75,-1.17) -- (-0.75,-1.33);
+     \draw[very thick,gray] (-0.77,-1.17) -- (-0.77,-1.33);
+     \draw[very thick,gray] (-0.77,-1.19) -- (-0.75,-1.19);
+     \draw[very thick,gray] (-0.75,-1.21) -- (-0.69,-1.21);
+     \draw[very thick,gray] (-0.75,-1.23) -- (-0.69,-1.23);
+     \draw[very thick,gray] (-0.71,-1.21) -- (-0.71,-1.23);
+     \draw[very thick,gray] (0.65,-1.17) -- (0.65,-1.33);
+     \draw[very thick,gray] (-0.55,-1.17) -- (-0.55,-1.33);
+     \draw[very thick,gray] (-0.69,-1.27) -- (-0.55,-1.27);
+     \draw[very thick,gray] (-0.69,-1.29) -- (-0.55,-1.29);
+     \draw[very thick,gray] (-0.61,-1.27) -- (-0.61,-1.29);
+     \draw[very thick,gray] (-0.69,-1.25) -- (-0.55,-1.25);
+     \draw[very thick,gray] (-0.65,-1.25) -- (-0.65,-1.27);
+     \draw[very thick,gray] (0.55,-1.17) -- (0.55,-1.33);
+     \draw[very thick,gray] (-0.55,-1.31) -- (0.55,-1.31);
+     \draw[very thick,gray] (-0.51,-1.31) -- (-0.51,-1.33);
+     \draw[very thick,gray] (0.51,-1.31) -- (0.51,-1.33);
+     \draw[very thick,gray] (0.55,-1.29) -- (0.65,-1.29);
+     \draw[very thick,gray] (0.55,-1.27) -- (0.65,-1.27);
+     \draw[very thick,gray] (0.61,-1.27) -- (0.61,-1.29);
+     \draw[very thick,gray] (0.75,-1.17) -- (0.75,-1.33);
+     \draw[very thick,gray] (0.65,-1.23) -- (0.75,-1.23);
+     \draw[very thick,gray] (0.65,-1.25) -- (0.75,-1.25);
+     \draw[very thick,gray] (0.69,-1.23) -- (0.69,-1.25);
+     \draw[very thick,gray] (0.65,-1.21) -- (0.75,-1.21);
+     \draw[very thick,gray] (0.71,-1.21) -- (0.71,-1.23);
+     \draw[very thick,gray] (0.77,-1.17) -- (0.77,-1.33);
+     \draw[very thick,gray] (0.75,-1.19) -- (0.77,-1.19);
+     \draw[very thick,gray] (-1.01,1.13) -- (0.93,1.13);
+     \draw[very thick,gray] (-1.01,-1.07) -- (0.93,-1.07);
+     \draw[very thick,gray] (-0.87,-1.07) -- (-0.87,-1.17);
+     \draw[very thick,gray] (-0.91,-1.07) -- (-0.91,-1.17);
+     \draw[very thick,gray] (-0.91,-1.11) -- (-0.87,-1.11);
+     \draw[very thick,gray] (-0.89,-1.07) -- (-0.89,-1.11);
+     \draw[very thick,gray] (-0.91,-1.09) -- (-0.89,-1.09);
+     \draw[very thick,gray] (0.83,-1.07) -- (0.83,-1.17);
+     \draw[very thick,gray] (-0.81,-1.07) -- (-0.81,-1.17);
+     \draw[very thick,gray] (-0.87,-1.13) -- (-0.81,-1.13);
+     \draw[very thick,gray] (-0.83,-1.13) -- (-0.83,-1.17);
+     \draw[very thick,gray] (-0.83,-1.15) -- (-0.81,-1.15);
+     \draw[very thick,gray] (0.81,-1.07) -- (0.81,-1.17);
+     \draw[very thick,gray] (0.81,-1.15) -- (0.83,-1.15);
+     \draw[very thick,gray] (0.83,-1.13) -- (0.93,-1.13);
+     \draw[very thick,gray] (0.89,-1.07) -- (0.89,-1.13);
+     \draw[very thick,gray] (0.87,-1.07) -- (0.87,-1.13);
+     \draw[very thick,gray] (0.87,-1.11) -- (0.89,-1.11);
+     \draw[very thick,gray] (0.89,-1.09) -- (0.93,-1.09);
+     \draw[very thick,gray] (0.91,-1.07) -- (0.91,-1.09);
+     \draw[very thick,gray] (-0.93,1.13) -- (-0.93,-1.07);
+     \draw[very thick,gray] (-1.01,1.01) -- (-0.93,1.01);
+     \draw[very thick,gray] (-1.01,-1.01) -- (-0.93,-1.01);
+     \draw[very thick,gray] (-0.97,-1.01) -- (-0.97,-1.07);
+     \draw[very thick,gray] (-0.97,-1.05) -- (-0.93,-1.05);
+     \draw[very thick,gray] (-0.95,-1.01) -- (-0.95,-1.05);
+     \draw[very thick,gray] (-0.97,-1.03) -- (-0.95,-1.03);
+     \draw[very thick,gray] (-1.01,1.05) -- (-0.93,1.05);
+     \draw[very thick,gray] (-0.97,1.05) -- (-0.97,1.01);
+     \draw[very thick,gray] (-0.95,1.05) -- (-0.95,1.01);
+     \draw[very thick,gray] (-0.97,1.03) -- (-0.95,1.03);
+     \draw[very thick,gray] (-0.93,1.09) -- (0.93,1.09);
+     \draw[very thick,gray] (-0.93,1.07) -- (0.93,1.07);
+     \draw[very thick,gray] (-0.91,1.09) -- (-0.91,1.07);
+     \draw[very thick,gray] (0.91,1.09) -- (0.91,1.07);
+     \draw[very thick,gray] (-0.87,1.13) -- (-0.87,1.09);
+     \draw[very thick,gray] (-0.89,1.13) -- (-0.89,1.09);
+     \draw[very thick,gray] (-0.89,1.11) -- (-0.87,1.11);
+     \draw[very thick,gray] (0.87,1.13) -- (0.87,1.09);
+     \draw[very thick,gray] (0.89,1.13) -- (0.89,1.09);
+     \draw[very thick,gray] (0.87,1.11) -- (0.89,1.11);
+     \draw[very thick,gray] (-0.75,1.29) -- (-0.75,1.13);
+     \draw[very thick,gray] (-0.81,1.29) -- (-0.81,1.13);
+     \draw[very thick,gray] (-0.83,1.29) -- (-0.83,1.13);
+     \draw[very thick,gray] (-0.83,1.15) -- (-0.81,1.15);
+     \draw[very thick,gray] (-0.81,1.17) -- (-0.75,1.17);
+     \draw[very thick,gray] (-0.81,1.19) -- (-0.75,1.19);
+     \draw[very thick,gray] (-0.77,1.19) -- (-0.77,1.17);
+     \draw[very thick,gray] (0.71,1.29) -- (0.71,1.13);
+     \draw[very thick,gray] (-0.65,1.29) -- (-0.65,1.13);
+     \draw[very thick,gray] (-0.75,1.23) -- (-0.65,1.23);
+     \draw[very thick,gray] (-0.75,1.21) -- (-0.65,1.21);
+     \draw[very thick,gray] (-0.71,1.23) -- (-0.71,1.21);
+     \draw[very thick,gray] (-0.75,1.25) -- (-0.65,1.25);
+     \draw[very thick,gray] (-0.69,1.25) -- (-0.69,1.23);
+     \draw[very thick,gray] (0.65,1.29) -- (0.65,1.13);
+     \draw[very thick,gray] (-0.61,1.29) -- (-0.61,1.13);
+     \draw[very thick,gray] (-0.65,1.27) -- (-0.61,1.27);
+     \draw[very thick,gray] (0.61,1.29) -- (0.61,1.13);
+     \draw[very thick,gray] (0.61,1.27) -- (0.65,1.27);
+     \draw[very thick,gray] (0.65,1.25) -- (0.71,1.25);
+     \draw[very thick,gray] (0.65,1.23) -- (0.71,1.23);
+     \draw[very thick,gray] (0.69,1.25) -- (0.69,1.23);
+     \draw[very thick,gray] (0.71,1.19) -- (0.93,1.19);
+     \draw[very thick,gray] (0.81,1.19) -- (0.81,1.13);
+     \draw[very thick,gray] (0.71,1.17) -- (0.81,1.17);
+     \draw[very thick,gray] (0.77,1.19) -- (0.77,1.17);
+     \draw[very thick,gray] (0.83,1.19) -- (0.83,1.13);
+     \draw[very thick,gray] (0.81,1.15) -- (0.83,1.15);
+     \draw[very thick,gray] (0.75,1.29) -- (0.75,1.19);
+     \draw[very thick,gray] (0.71,1.21) -- (0.75,1.21);
+     \draw[very thick,gray] (0.93,-0.91) -- (1.27,-0.91);
+     \draw[very thick,gray] (0.93,-1.01) -- (1.27,-1.01);
+     \draw[very thick,gray] (0.97,-1.01) -- (0.97,-1.33);
+     \draw[very thick,gray] (0.93,-1.05) -- (0.97,-1.05);
+     \draw[very thick,gray] (0.95,-1.01) -- (0.95,-1.05);
+     \draw[very thick,gray] (0.95,-1.03) -- (0.97,-1.03);
+     \draw[very thick,gray] (1.03,-0.91) -- (1.03,-1.01);
+     \draw[very thick,gray] (1.01,-0.91) -- (1.01,-1.01);
+     \draw[very thick,gray] (1.01,-0.97) -- (1.03,-0.97);
+     \draw[very thick,gray] (1.07,-0.91) -- (1.07,-1.01);
+     \draw[very thick,gray] (1.03,-0.95) -- (1.07,-0.95);
+     \draw[very thick,gray] (1.05,-0.91) -- (1.05,-0.95);
+     \draw[very thick,gray] (1.05,-0.93) -- (1.07,-0.93);
+     \draw[very thick,gray] (0.93,0.89) -- (1.27,0.89);
+     \draw[very thick,gray] (0.93,-0.75) -- (1.27,-0.75);
+     \draw[very thick,gray] (1.13,-0.75) -- (1.13,-0.91);
+     \draw[very thick,gray] (1.09,-0.75) -- (1.09,-0.91);
+     \draw[very thick,gray] (1.09,-0.87) -- (1.13,-0.87);
+     \draw[very thick,gray] (1.11,-0.87) -- (1.11,-0.91);
+     \draw[very thick,gray] (1.09,-0.89) -- (1.11,-0.89);
+     \draw[very thick,gray] (1.17,-0.75) -- (1.17,-0.91);
+     \draw[very thick,gray] (1.13,-0.83) -- (1.17,-0.83);
+     \draw[very thick,gray] (1.13,-0.81) -- (1.17,-0.81);
+     \draw[very thick,gray] (1.15,-0.81) -- (1.15,-0.83);
+     \draw[very thick,gray] (1.17,-0.77) -- (1.27,-0.77);
+     \draw[very thick,gray] (1.19,-0.75) -- (1.19,-0.77);
+     \draw[very thick,gray] (0.93,0.71) -- (1.27,0.71);
+     \draw[very thick,gray] (0.93,-0.69) -- (1.27,-0.69);
+     \draw[very thick,gray] (1.21,-0.69) -- (1.21,-0.75);
+     \draw[very thick,gray] (1.23,-0.69) -- (1.23,-0.75);
+     \draw[very thick,gray] (1.21,-0.71) -- (1.23,-0.71);
+     \draw[very thick,gray] (1.25,0.71) -- (1.25,-0.69);
+     \draw[very thick,gray] (0.93,0.69) -- (1.25,0.69);
+     \draw[very thick,gray] (1.23,0.71) -- (1.23,0.69);
+     \draw[very thick,gray] (1.25,0.65) -- (1.27,0.65);
+     \draw[very thick,gray] (1.25,-0.65) -- (1.27,-0.65);
+     \draw[very thick,gray] (1.17,0.89) -- (1.17,0.71);
+     \draw[very thick,gray] (1.13,0.89) -- (1.13,0.71);
+     \draw[very thick,gray] (1.11,0.89) -- (1.11,0.71);
+     \draw[very thick,gray] (1.11,0.87) -- (1.13,0.87);
+     \draw[very thick,gray] (1.13,0.81) -- (1.17,0.81);
+     \draw[very thick,gray] (1.13,0.83) -- (1.17,0.83);
+     \draw[very thick,gray] (1.15,0.83) -- (1.15,0.81);
+     \draw[very thick,gray] (1.17,0.77) -- (1.27,0.77);
+     \draw[very thick,gray] (1.21,0.77) -- (1.21,0.71);
+     \draw[very thick,gray] (1.17,0.75) -- (1.21,0.75);
+     \draw[very thick,gray] (1.19,0.77) -- (1.19,0.75);
+     \draw[very thick,gray] (0.93,1.01) -- (1.27,1.01);
+     \draw[very thick,gray] (1.05,1.01) -- (1.05,0.89);
+     \draw[very thick,gray] (1.01,1.01) -- (1.01,0.89);
+     \draw[very thick,gray] (1.01,0.95) -- (1.05,0.95);
+     \draw[very thick,gray] (1.01,0.97) -- (1.05,0.97);
+     \draw[very thick,gray] (1.03,0.97) -- (1.03,0.95);
+     \draw[very thick,gray] (1.09,1.01) -- (1.09,0.89);
+     \draw[very thick,gray] (1.05,0.93) -- (1.09,0.93);
+     \draw[very thick,gray] (1.07,0.93) -- (1.07,0.89);
+     \draw[very thick,gray] (1.07,0.91) -- (1.09,0.91);
+     \draw[very thick,gray] (0.97,1.29) -- (0.97,1.01);
+     \draw[very thick,gray] (0.93,1.05) -- (0.97,1.05);
+     \draw[very thick,gray] (0.95,1.05) -- (0.95,1.01);
+     \draw[very thick,gray] (0.95,1.03) -- (0.97,1.03);
+     \draw[very thick,gray] (-1.33,1.39) -- (1.27,1.39);
+     \draw[very thick,gray] (-0.51,1.39) -- (-0.51,1.29);
+     \draw[very thick,gray] (-0.55,1.39) -- (-0.55,1.29);
+     \draw[very thick,gray] (-0.55,1.31) -- (-0.51,1.31);
+     \draw[very thick,gray] (0.45,1.39) -- (0.45,1.29);
+     \draw[very thick,gray] (-0.39,1.39) -- (-0.39,1.29);
+     \draw[very thick,gray] (-0.51,1.33) -- (-0.39,1.33);
+     \draw[very thick,gray] (-0.51,1.35) -- (-0.39,1.35);
+     \draw[very thick,gray] (-0.45,1.35) -- (-0.45,1.33);
+     \draw[very thick,gray] (0.31,1.39) -- (0.31,1.29);
+     \draw[very thick,gray] (-0.31,1.39) -- (-0.31,1.29);
+     \draw[very thick,gray] (-0.39,1.37) -- (-0.31,1.37);
+     \draw[very thick,gray] (0.31,1.37) -- (0.45,1.37);
+     \draw[very thick,gray] (0.31,1.35) -- (0.45,1.35);
+     \draw[very thick,gray] (0.39,1.37) -- (0.39,1.35);
+     \draw[very thick,gray] (0.55,1.39) -- (0.55,1.29);
+     \draw[very thick,gray] (0.45,1.33) -- (0.55,1.33);
+     \draw[very thick,gray] (0.51,1.33) -- (0.51,1.29);
+     \draw[very thick,gray] (0.51,1.31) -- (0.55,1.31);
+     \draw[very thick,gray] (-1.33,1.41) -- (1.27,1.41);
+     \draw[very thick,gray] (-0.21,1.41) -- (-0.21,1.39);
+     \draw[very thick,gray] (0.21,1.41) -- (0.21,1.39);
+     \draw[very thick,gray] (1.39,-3) -- (1.39,3);
+     \draw[very thick,gray] (1.27,-0.55) -- (1.39,-0.55);
+     \draw[very thick,gray] (1.27,-0.61) -- (1.39,-0.61);
+     \draw[very thick,gray] (1.29,-0.55) -- (1.29,-0.61);
+     \draw[very thick,gray] (1.27,0.51) -- (1.39,0.51);
+     \draw[very thick,gray] (1.27,-0.39) -- (1.39,-0.39);
+     \draw[very thick,gray] (1.33,-0.39) -- (1.33,-0.55);
+     \draw[very thick,gray] (1.27,-0.51) -- (1.33,-0.51);
+     \draw[very thick,gray] (1.31,-0.51) -- (1.31,-0.55);
+     \draw[very thick,gray] (1.35,-0.39) -- (1.35,-0.55);
+     \draw[very thick,gray] (1.33,-0.45) -- (1.35,-0.45);
+     \draw[very thick,gray] (1.27,0.39) -- (1.39,0.39);
+     \draw[very thick,gray] (1.37,0.39) -- (1.37,-0.39);
+     \draw[very thick,gray] (1.37,-0.31) -- (1.39,-0.31);
+     \draw[very thick,gray] (1.37,0.31) -- (1.39,0.31);
+     \draw[very thick,gray] (1.33,0.51) -- (1.33,0.39);
+     \draw[very thick,gray] (1.35,0.51) -- (1.35,0.39);
+     \draw[very thick,gray] (1.33,0.45) -- (1.35,0.45);
+     \draw[very thick,gray] (1.27,0.61) -- (1.39,0.61);
+     \draw[very thick,gray] (1.29,0.61) -- (1.29,0.51);
+     \draw[very thick,gray] (1.31,0.61) -- (1.31,0.51);
+     \draw[very thick,gray] (1.29,0.55) -- (1.31,0.55);
+     \draw[very thick,gray] (1.41,-3) -- (1.41,3);
+     \draw[very thick,gray] (1.39,-0.21) -- (1.41,-0.21);
+     \draw[very thick,gray] (1.39,0.21) -- (1.41,0.21);
+
+
+   \end{tikzpicture}
+  \end{minipage}
+
+
 \end{enumerate}
 \end{document}
+

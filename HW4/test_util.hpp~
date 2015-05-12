@@ -1,3 +1,0 @@
-#include <vector>
-
-void printVec( std::vector<Example*>vec );

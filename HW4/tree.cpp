@@ -51,11 +51,16 @@ int main(int argc, char**argv ){
 	#endif
 
 	Node*root = buildTree( examples ,attrSet, epsilon );
-	#ifdef _DEBUG
-	printTree( root , "   " );
-	#endif
 
-	printTreeInC( root );
 	
+
+
+	#ifdef _DEBUG
+	//printTree( root , "   " );
+	printGraph( root , -3 , -3 , 3 , 3);
+	#endif
+	#ifndef _DEBUG
+	printTreeInC( root );
+	#endif
 	return 0;
 }

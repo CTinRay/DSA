@@ -165,6 +165,7 @@ void printForestInC( std::vector<Node*>&roots ){
 				std::cout << indent << "vote +=" << decision << ";" << std::endl; }
 			);			
 	}
+	std::cout << "voting:" << std::endl;
 	std::cout << INDENT << "return vote > 0 ? 1 : -1;" << std::endl
 		  << "}" << std::endl;
 	
