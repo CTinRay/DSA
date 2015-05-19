@@ -2,6 +2,7 @@
 #include <list>
 #include <functional>
 #include <cstring>
+#include <iostream>
 struct EmptyHeap: public std::exception {};
 
 template<class T>
@@ -51,9 +52,11 @@ class BinomialHeap {
 				if( added -> element > adder -> element ){
 					added -> children.push_back( adder );
 					carry = added;
+					sum = nullptr;
 				}else{
 					adder -> children.push_back( added );
 					carry = adder;
+					sum = nullptr;
 				}
 				carry -> _size = added -> size() + adder -> size();
 			}else{
@@ -82,19 +85,32 @@ class BinomialHeap {
 		MaxRemainder maxReminder;
 		maxReminder.first = bt -> element;		
 		BinomialHeap binomialHeap;
+		int maxTreeIndex = 0;
 		int i = 0;
+		#ifdef _DEBUG
+		std::cout << "bt -> children.size: " << bt -> children.size() << std::endl;
+		#endif
 		for( auto it = bt -> children.begin();
 		     it != bt -> children.end(); ++it ){
-			binomialHeap.trees[i++] = *it ;
+			binomialHeap.trees[i] = (*it) ;
+			if( (*it) -> size() > 0  &&
+			    ( maxTreeIndex == -1 ||
+			      (*it) -> element > binomialHeap.trees[maxTreeIndex] -> element) ){
+				maxTreeIndex = i;
+			}
+			i += 1;
 		}		    
 		binomialHeap.size = bt -> size() -1 ;
+		binomialHeap.maxTreeInd = maxTreeIndex;
 		maxReminder.second = binomialHeap;
+		bt -> children.clear();
+		delete bt;
 		return maxReminder;
         }
 
         int size;
         BT* trees[32]; //binomial trees of the binomial heap, where trees[i] is a tree with size 2^i.
-	T*topValue;
+	int maxTreeInd;
     public:
         BinomialHeap(): size(0) {
             for(int i=0; i<32; ++i) trees[i] = nullptr;
@@ -102,7 +118,7 @@ class BinomialHeap {
         BinomialHeap(T element): size(1) {
             for(int i=0; i<32; ++i) trees[i] = nullptr;
             trees[0] = new BT(element);
-	    topValue = &element;
+	    maxTreeInd = 0;
         }
 
         /* merge all elements in the binomial heap b into *this, and clear the binomial heap b.
@@ -112,7 +128,7 @@ class BinomialHeap {
         void merge(BH &b) {
 		size += b.size;
 		BinomialTree*carry = nullptr;
-		int maxTreeInd = -1;
+		maxTreeInd = -1;
 		for( int i = 0 ; i < 32 ; ++i ){
 			CarrySum carrySum = merge_tree( trees[ i ], b.trees[ i ], carry );
 			trees[ i ] = carrySum.second;
@@ -124,9 +140,10 @@ class BinomialHeap {
 		        carry = carrySum.first;
 		}
 		#ifdef _DEBUG
-		//std::cout << "merge:119 maxTreeInd = " << maxTreeInd << std::endl;
+		if( maxTreeInd == -1 ){
+			std::cout << "mergeL:128 err! " << std::endl;
+		}
 		#endif
-		topValue = &( trees[ maxTreeInd ] -> element );
 		b.size = 0;
 		for( int i = 0 ; i < 31 ; ++i ){
 			b.trees[ i ] = nullptr;
@@ -140,7 +157,7 @@ class BinomialHeap {
             merge(tmp);
         }
 	T top(){
-		return *topValue;
+		return trees[maxTreeInd] -> element;
 	}		
         T pop() {
             if(size==0) throw EmptyHeap();
@@ -151,12 +168,16 @@ class BinomialHeap {
                     if(trees[i]->size() > 0 && (max_tree == -1 || trees[i]->element > trees[max_tree]->element))
                         max_tree = i;
 		}
+		#ifdef _DEBUG
+		std::cout << "max_tree " << max_tree  << std::endl
+			  << "heap size: " << size << std::endl;
+		#endif
+		size -= trees[max_tree] -> size();
                 MaxRemainder m_r = pop_max(trees[max_tree]);
                 T &max_element = m_r.first;
                 BH &remainder = m_r.second;
-
 		//************************
-		delete trees[max_tree];//*
+
 		//************************
                 trees[max_tree] = nullptr;
                 merge(remainder);

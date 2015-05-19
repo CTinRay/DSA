@@ -123,9 +123,9 @@
         List leqList;
         if( heapRoot -> value <= k ){
           leqList -> insert( k );
-        }
-        for( child in heapRoot -> childs ){
-          leqList -> insert( findLeq( chind, k ) );
+          for( child in heapRoot -> childs ){
+            leqList -> insert( findLeq( chind, k ) );
+          }
         }
         return leqList;
       }          
