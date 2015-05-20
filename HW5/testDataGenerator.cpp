@@ -42,22 +42,23 @@ int main(int argc,char**argv){
 	std::fstream testIn("n" + std::to_string( nData ) + "c" + std::to_string( nComputer ) + 
 			    "w" + std::to_string( nMinTask ) + ".in" , std::fstream::out);
 	//std::fstream testOut("n" + nData + "c" + nComputer + "w" + nMinTask + ".ans" , std::fstream::out);
+	testIn << nComputer << " " << nMinTask << std::endl;
 	int taskCounter = 0;
 	srand( time(NULL));	
-	
-	for( int i = 0 ; i < 10 ; ++i ){
+
+	#ifdef _DEBUG
+	for( int i = 0 ; i < 10000 ; ++i ){
 		testIn << "assign " << 0 
 		       << " " << taskCounter
 		       << " " << i << std::endl;
 		assign( 0, taskCounter++, i, taskQueues );
 	}
 
-	for( int i = 0 ; i < 10 ; ++i ){
-		if( taskQueues[ 0 ].getSize() > 0 ){
-			testIn << "execute " << 0 << std::endl;
-		}
+	while( taskQueues[ 0 ].getSize() > 0 ){
+		testIn << "execute " << 0 << std::endl;
 		execute( 0, taskQueues );
 	}
+	#endif
 		
 	for( int i = 0 ; i < nData ; ++i ){
 		int cmdType = getRand( nCmdType );
@@ -76,12 +77,14 @@ int main(int argc,char**argv){
 		case cmdExecute:
 			if( taskQueues[ computerID1 ].getSize() > 0 ){
 				testIn << "execute " << computerID1 << std::endl;
+				execute( computerID1, taskQueues );
 			}
-			execute( computerID1, taskQueues );
 			break;
 		case cmdMerge:
-			testIn << "merge " << computerID1 << " " << computerID2 << std::endl;
-			merge( computerID1, computerID2, nMinTask, taskQueues );
+			if( computerID1 != computerID2 ){
+				testIn << "merge " << computerID1 << " " << computerID2 << std::endl;
+				merge( computerID1, computerID2, nMinTask, taskQueues );
+			}
 			break;
 		}
 	}

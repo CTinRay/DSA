@@ -19,6 +19,9 @@ void merge(int computerID1, int computerID2, int minTask, std::vector< BinomialH
 	if( taskQueues[ computerID2 ].getSize() < minTask ){
 		std::cout << "Merging request failed." << std::endl;
 	}else{			
+		#ifdef _DEBUG
+		std::cout << "computer2 size: " << taskQueues[ computerID2 ].getSize() << std::endl;
+		#endif
 		taskQueues[ computerID1 ].merge( taskQueues[ computerID2 ] );
 		std::cout << "The largest priority number is now " 
 			  << taskQueues[ computerID1 ].top().priority
@@ -38,7 +41,8 @@ void execute( int computerID, std::vector< BinomialHeap<Tuple> >&taskQueues){
 		std::cout << "Computer " << computerID 
 			  << " executed task " << taskID << "." << std::endl;
 		#ifdef _DEBUG
-		std::cout << "                    priority:" << taskQueues[ computerID ].top().priority << std::endl;
+		std::cout << "=>priority:" << taskQueues[ computerID ].top().priority << std::endl
+			  << "size: " << taskQueues[ computerID ].getSize() <<std::endl << std::endl;
 		#endif
 		taskQueues[ computerID ].pop();
 	}

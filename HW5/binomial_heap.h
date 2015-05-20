@@ -48,15 +48,16 @@ class BinomialHeap {
 		BT*carry = nullptr;
 		BT*sum = nullptr;
 		std::function<void(BT*,BT*)>halfAdd = [&carry,&sum](BT* added,BT* adder ){
+			sum = nullptr;
 			if( added -> size() > 0 && adder -> size() > 0 ){
 				if( added -> element > adder -> element ){
 					added -> children.push_back( adder );
 					carry = added;
-					sum = nullptr;
+					//sum = nullptr;
 				}else{
 					adder -> children.push_back( added );
 					carry = adder;
-					sum = nullptr;
+					//sum = nullptr;
 				}
 				carry -> _size = added -> size() + adder -> size();
 			}else{
@@ -141,11 +142,14 @@ class BinomialHeap {
 		}
 		#ifdef _DEBUG
 		if( maxTreeInd == -1 ){
-			std::cout << "mergeL:128 err! " << std::endl;
+			std::cout << "merge:144 err! b.size = " << b.size << std::endl;
+		}else{
+			std::cout << "in binomial_heap.h:merge, set maxTreeInd to " << maxTreeInd << std::endl;
+			std::cout << "this -> trees " << this -> trees << " b.trees" << b.trees << std::endl;
 		}
 		#endif
 		b.size = 0;
-		for( int i = 0 ; i < 31 ; ++i ){
+		for( int i = 0 ; i < 32 ; ++i ){
 			b.trees[ i ] = nullptr;
 		}
         }
