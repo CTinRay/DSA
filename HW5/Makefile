@@ -1,4 +1,4 @@
-CPPFLAGS = -O2 -std=c++11 -Wall 
+CPPFLAGS = -O3 -std=c++11 -Wall 
 CPPFLAGS_DBG = -std=c++11 -Wall -g3 -D_DEBUG
 system:distributed_system.cpp system.cpp binomial_heap.h
 	g++ $(CPPFLAGS) system.cpp distributed_system.cpp -o system

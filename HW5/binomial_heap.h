@@ -3,6 +3,7 @@
 #include <functional>
 #include <cstring>
 #include <iostream>
+#include <vector>
 struct EmptyHeap: public std::exception {};
 
 template<class T>
@@ -86,7 +87,7 @@ class BinomialHeap {
 		MaxRemainder maxReminder;
 		maxReminder.first = bt -> element;		
 		BinomialHeap binomialHeap;
-		int maxTreeIndex = 0;
+		int maxTreeIndex = -1;
 		int i = 0;
 		#ifdef _DEBUG
 		std::cout << "bt -> children.size: " << bt -> children.size() << std::endl;
@@ -104,20 +105,23 @@ class BinomialHeap {
 		binomialHeap.size = bt -> size() -1 ;
 		binomialHeap.maxTreeInd = maxTreeIndex;
 		maxReminder.second = binomialHeap;
-		bt -> children.clear();
+		//bt -> children.clear();
 		delete bt;
 		return maxReminder;
         }
 
         int size;
-        BT* trees[32]; //binomial trees of the binomial heap, where trees[i] is a tree with size 2^i.
+        BT* trees[32] = {0}; //binomial trees of the binomial heap, where trees[i] is a tree with size 2^i.
+	//std::vector<BT*>trees;
 	int maxTreeInd;
     public:
         BinomialHeap(): size(0) {
-            for(int i=0; i<32; ++i) trees[i] = nullptr;
+		//trees.resize(32);
+		//for(int i=0; i<32; ++i) trees[i] = nullptr;
         }
         BinomialHeap(T element): size(1) {
-            for(int i=0; i<32; ++i) trees[i] = nullptr;
+		//trees.resize(32);
+		//for(int i=0; i<32; ++i) trees[i] = nullptr;
             trees[0] = new BT(element);
 	    maxTreeInd = 0;
         }
@@ -145,7 +149,7 @@ class BinomialHeap {
 			std::cout << "merge:144 err! b.size = " << b.size << std::endl;
 		}else{
 			std::cout << "in binomial_heap.h:merge, set maxTreeInd to " << maxTreeInd << std::endl;
-			std::cout << "this -> trees " << this -> trees << " b.trees" << b.trees << std::endl;
+			//std::cout << "this -> trees " << this -> trees << " b.trees" << b.trees << std::endl;
 		}
 		#endif
 		b.size = 0;
@@ -167,23 +171,23 @@ class BinomialHeap {
             if(size==0) throw EmptyHeap();
             else {
                 //find the tree contains maximum element
-                int max_tree = -1;
-                for(int i=0; i<32; ++i){
+                //int max_tree = -1;
+                /*for(int i=0; i<32; ++i){
                     if(trees[i]->size() > 0 && (max_tree == -1 || trees[i]->element > trees[max_tree]->element))
                         max_tree = i;
-		}
+			}*/
 		#ifdef _DEBUG
-		std::cout << "max_tree " << max_tree  << std::endl
+		std::cout << "max_tree " << maxTreeInd  << std::endl
 			  << "heap size: " << size << std::endl;
 		#endif
-		size -= trees[max_tree] -> size();
-                MaxRemainder m_r = pop_max(trees[max_tree]);
+		size -= trees[maxTreeInd] -> size();
+                MaxRemainder m_r = pop_max(trees[maxTreeInd]);
                 T &max_element = m_r.first;
                 BH &remainder = m_r.second;
 		//************************
 
 		//************************
-                trees[max_tree] = nullptr;
+                trees[maxTreeInd] = nullptr;
                 merge(remainder);
                 return max_element;
             }
