@@ -61,31 +61,29 @@ int main(int argc,char**argv){
 	#endif
 		
 	for( int i = 0 ; i < nData ; ++i ){
-		int cmdType = getRand( nCmdType );
+		int cmdType = getRand( 100 );
 		int taskID = taskCounter ++;
 		int priority = getRand( priorityBound );
 		int computerID1 = getRand( nComputer ) ;
 		int computerID2 = getRand( nComputer ) ;			
 
-		switch( cmdType ){
-		case cmdAssign:
+		if( cmdType <= 60 ){
 			testIn << "assign " << computerID1 
 			       << " " << taskID 
 			       << " " << priority << std::endl;
 			assign( computerID1, taskID, priority, taskQueues );
-			break;
-		case cmdExecute:
+		}
+		else if( cmdType <= 80 ){ 
 			if( taskQueues[ computerID1 ].getSize() > 0 ){
 				testIn << "execute " << computerID1 << std::endl;
 				execute( computerID1, taskQueues );
 			}
-			break;
-		case cmdMerge:
+		}
+		else {
 			if( computerID1 != computerID2 ){
 				testIn << "merge " << computerID1 << " " << computerID2 << std::endl;
 				merge( computerID1, computerID2, nMinTask, taskQueues );
 			}
-			break;
 		}
 	}
 	testIn.close();
