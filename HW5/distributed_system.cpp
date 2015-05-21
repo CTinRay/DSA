@@ -1,5 +1,5 @@
 //#include "binomial_heap.h"
-#include "distributed_system.hpp"
+//#include "distributed_system.hpp"
 #include <vector>
 #include <iostream>
 
@@ -14,8 +14,8 @@ bool operator > ( Tuple&t1, Tuple&t2){
 	}
 	return false;
 }
-
-void merge(int computerID1, int computerID2, int minTask, std::vector< BinomialHeap<Tuple> >&taskQueues ){
+/*
+void merge(int computerID1, int computerID2, int minTask, HeapList taskQueues ){
 	if( taskQueues[ computerID2 ].getSize() < minTask ){
 		std::cout << "Merging request failed." << std::endl;
 	}else{			
@@ -29,7 +29,7 @@ void merge(int computerID1, int computerID2, int minTask, std::vector< BinomialH
 	}
 }       
 
-void execute( int computerID, std::vector< BinomialHeap<Tuple> >&taskQueues){
+void execute( int computerID, HeapList taskQueues){
 	if( taskQueues[ computerID ].getSize() == 0 ){
 		std::cout << "compute " << computerID << " not execute." << std::endl;
 		return;
@@ -48,9 +48,10 @@ void execute( int computerID, std::vector< BinomialHeap<Tuple> >&taskQueues){
 	}
 }
 
-void assign( int computerID, int taskID, int priority, std::vector< BinomialHeap<Tuple> >&taskQueues ){
+void assign( int computerID, int taskID, int priority, HeapList taskQueues ){
 	Tuple tuple = { priority, taskID };
 	taskQueues[ computerID ].insert( tuple );
 	std::cout << "There are " << taskQueues[ computerID ].getSize() 
 		  << " tasks on computer " << computerID << "." << std::endl;
 }
+*/

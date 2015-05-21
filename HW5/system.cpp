@@ -5,12 +5,12 @@
 
 #include "distributed_system.hpp"
 
-
+BinomialHeap<Tuple>taskQueues[1000001];
 int main(){
 	int nComputer, minTask;
 	std::string command;
 	std::cin >> nComputer >> minTask ;
-	std::vector< BinomialHeap<Tuple> >taskQueues(nComputer);
+	//std::vector< BinomialHeap<Tuple> >taskQueues(nComputer);
 	#ifdef _DEBUG
 	int counter = 0 ;
 	#endif
