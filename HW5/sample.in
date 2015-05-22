@@ -1,7 +1,0 @@
-10 2
-assign 2 29 100
-merge 0 2
-assign 2 1 300
-assign 1 23 300
-merge 1 2
-execute 1

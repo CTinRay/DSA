@@ -1,0 +1,9 @@
+#include "./biginteger.h"
+
+int main(){
+	BigInteger bigint;
+	bigint.iseven();
+	return 0;
+	
+}	
+

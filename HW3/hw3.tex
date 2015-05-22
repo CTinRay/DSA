@@ -21,7 +21,8 @@
 \setmainfont{FreeSans}
 \setmathsfont(Digits,Latin,Greek)[Numbers={Lining,Proportional}]{FreeSerif}
 \newfontfamily\ZhFont{文泉驛微米黑}
-\newfontfamily\SmallFont[Scale=0.8]{FreeSans}
+\newfontfamily\SmallFont[Scale=0.7]{FreeSans}
+\newfontfamily\SmallSmallFont[Scale=0.7]{FreeSans}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
 \pagestyle{fancy}
@@ -34,7 +35,7 @@
 \lstset{
   mathescape,         
   literate={ai}{${a_i}$}{2},
-  basicstyle=\SmallFont
+  basicstyle=\linespread{0.7}\SmallFont
 }
 
 
@@ -422,5 +423,5 @@
       
     \end{enumerate}
 \end{enumerate}
- 
+\\
 \end{document}

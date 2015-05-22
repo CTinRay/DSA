@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2015.4.24)  28 APR 2015 10:57
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/Debian) (format=xelatex 2015.4.24)  28 APR 2015 11:48
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -726,28 +726,28 @@ File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 . fontspec info: "defining-font"
 . 
 . Font family 'FreeSans(1)' created for font 'FreeSans' with options
-. [Scale=0.8].
+. [Scale=0.7].
 . 
 . This font family consists of the following shapes:
 . 
 . * 'normal' with NFSS spec.:
-. <->s*[0.8]"FreeSans/OT:script=latn;language=DFLT;"
+. <->s*[0.7]"FreeSans/OT:script=latn;language=DFLT;"
 . 
 . * 'small caps' with NFSS spec.:
-. <->s*[0.8]"FreeSans/OT:script=latn;language=DFLT;+smcp;"
+. <->s*[0.7]"FreeSans/OT:script=latn;language=DFLT;+smcp;"
 . and font adjustment code:
 . 
 . 
 . * 'bold' with NFSS spec.:
-. <->s*[0.8]"FreeSans/B/OT:script=latn;language=DFLT;"
+. <->s*[0.7]"FreeSans/B/OT:script=latn;language=DFLT;"
 . 
 . * 'bold small caps' with NFSS spec.:
-. <->s*[0.8]"FreeSans/B/OT:script=latn;language=DFLT;+smcp;"
+. <->s*[0.7]"FreeSans/B/OT:script=latn;language=DFLT;+smcp;"
 . and font adjustment code:
 . 
 . 
 . * 'italic' with NFSS spec.:
-. <->s*[0.8]"FreeSans/I/OT:script=latn;language=DFLT;"
+. <->s*[0.7]"FreeSans/I/OT:script=latn;language=DFLT;"
 . 
 . * 'small caps' with NFSS spec.:
 . 
@@ -755,7 +755,7 @@ File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 . 
 . 
 . * 'bold italic' with NFSS spec.:
-. <->s*[0.8]"FreeSans/BI/OT:script=latn;language=DFLT;"
+. <->s*[0.7]"FreeSans/BI/OT:script=latn;language=DFLT;"
 . 
 . * 'bold small caps' with NFSS spec.:
 . 
@@ -782,26 +782,26 @@ Package: lastpage 2015/03/29 v1.2m Refers to last page's name (HMM; JPG)
 ) (./hw3.aux)
 \openout1 = `hw3.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 41.
-LaTeX Font Info:    Try loading font information for T3+cmr on input line 41.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 42.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 42.
  (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
 File: t3cmr.fd 2001/12/31 TIPA font definitions
 )
-LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    ... okay on input line 42.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -840,12 +840,12 @@ LaTeX Font Info:    ... okay on input line 41.
 \c@lstlisting=\count152
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 41.
-LaTeX Font Info:    Try loading font information for U+msa on input line 42.
+(lastpage)             ! on input line 42.
+LaTeX Font Info:    Try loading font information for U+msa on input line 43.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 42.
+LaTeX Font Info:    Try loading font information for U+msb on input line 43.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -854,26 +854,26 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 LaTeX Warning: No \author given.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 63--65
+Underfull \hbox (badness 10000) in paragraph at lines 64--66
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 72--74
+Underfull \hbox (badness 10000) in paragraph at lines 73--75
 
  []
 
 LaTeX Font Info:    Font shape `EU1/FreeSans(1)/m/n' will be
-(Font)              scaled to size 9.60004pt on input line 76.
+(Font)              scaled to size 8.39996pt on input line 77.
 LaTeX Font Info:    Font shape `EU1/FreeSans(1)/m/it' will be
-(Font)              scaled to size 9.60004pt on input line 76.
+(Font)              scaled to size 8.39996pt on input line 77.
 
-Underfull \hbox (badness 10000) in paragraph at lines 76--77
+Underfull \hbox (badness 10000) in paragraph at lines 77--78
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 79--83
+Underfull \hbox (badness 10000) in paragraph at lines 80--84
 
  []
 
@@ -886,30 +886,44 @@ Package Fancyhdr Warning: \headheight is too small (12.0pt):
 [1
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 108--113
+Underfull \hbox (badness 10000) in paragraph at lines 109--114
 
  []
 
-[2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 218--220
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 219--221
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 220--223
+Underfull \hbox (badness 10000) in paragraph at lines 221--224
 
  []
 
-[4] [5] [6] [7] 
+[3] [4] [5]
+
+./hw3.tex:427: LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.427 \end
+          {document}
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
 AED: lastpage setting LastPage
-[8] (./hw3.aux) ) 
+[6] (./hw3.aux) ) 
 Here is how much of TeX's memory you used:
- 16862 strings out of 495643
- 330136 string characters out of 6187120
- 394014 words of memory out of 5000000
- 19898 multiletter control sequences out of 15000+600000
+ 16865 strings out of 495643
+ 330198 string characters out of 6187120
+ 404078 words of memory out of 5000000
+ 19901 multiletter control sequences out of 15000+600000
  11252 words of font info for 89 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 52i,11n,66p,10434b,1655s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 52i,11n,66p,10434b,1673s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on hw3.pdf (8 pages).
+Output written on hw3.pdf (6 pages).
